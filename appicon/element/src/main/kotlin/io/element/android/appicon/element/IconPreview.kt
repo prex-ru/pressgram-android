@@ -9,14 +9,11 @@
 package io.element.android.appicon.element
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 
@@ -30,7 +27,7 @@ internal fun IconPreview() {
             contentDescription = null,
         )
         Image(
-            painter = painterResource(id = R.mipmap.ic_launcher_foreground),
+            painter = painterResource(id = R.drawable.ic_launcher_foreground),
             contentDescription = null,
         )
     }
@@ -46,23 +43,8 @@ internal fun RoundIconPreview() {
             contentDescription = null,
         )
         Image(
-            painter = painterResource(id = R.mipmap.ic_launcher_foreground),
+            painter = painterResource(id = R.drawable.ic_launcher_foreground),
             contentDescription = null,
-        )
-    }
-}
-
-@Preview
-@Composable
-internal fun MonochromeIconPreview() {
-    Box(
-        modifier = Modifier
-            .background(Color(0xFF2F3133)),
-    ) {
-        Image(
-            painter = painterResource(id = R.mipmap.ic_launcher_monochrome),
-            colorFilter = ColorFilter.tint(Color(0xFFC3E0F6)),
-            contentDescription = null
         )
     }
 }

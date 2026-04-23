@@ -21,13 +21,13 @@ import androidx.compose.ui.graphics.Color
  * This class holds all the semantic tokens of the Compound theme.
  */
 data class SemanticColors(
-    /** Background colour for accent or brand actions. State: Hover */
+    /** Background colour for accent or brand actions. State: Hover. (Pressgram blue) */
     val bgAccentHovered: Color,
-    /** Background colour for accent or brand actions. State: Pressed */
+    /** Background colour for accent or brand actions. State: Pressed. (Pressgram blue) */
     val bgAccentPressed: Color,
-    /** Background colour for accent or brand actions. State: Rest. */
+    /** Background colour for accent or brand actions. State: Rest. (Pressgram blue) */
     val bgAccentRest: Color,
-    /** Background colour for accent or brand actions. State: Selected */
+    /** Background colour for accent or brand actions. State: Selected. (Pressgram blue) */
     val bgAccentSelected: Color,
     /** Background colour for primary actions. State: Disabled. */
     val bgActionPrimaryDisabled: Color,
@@ -91,7 +91,9 @@ data class SemanticColors(
     val bgSubtleSecondaryLevel0: Color,
     /** Subtle background colour for success state elements. State: Rest. */
     val bgSuccessSubtle: Color,
-    /** accent border intended for keylines on message highlights */
+    /** Accent borders for containers. (Pressgram blue) */
+    val borderAccentPrimary: Color,
+    /** Accent border intended for keylines on message highlights. (Pressgram blue) */
     val borderAccentSubtle: Color,
     /** High-contrast border for critical state. State: Hover. */
     val borderCriticalHovered: Color,
@@ -113,13 +115,9 @@ data class SemanticColors(
     val borderInteractiveSecondary: Color,
     /** Subtle border colour for success state elements. */
     val borderSuccessSubtle: Color,
-    /** Background gradient stop for super and send buttons */
     val gradientActionStop1: Color,
-    /** Background gradient stop for super and send buttons */
     val gradientActionStop2: Color,
-    /** Background gradient stop for super and send buttons */
     val gradientActionStop3: Color,
-    /** Background gradient stop for super and send buttons */
     val gradientActionStop4: Color,
     /** Subtle background gradient stop for critical */
     val gradientCriticalStop1: Color,
@@ -129,21 +127,16 @@ data class SemanticColors(
     val gradientInfoStop1: Color,
     /** Subtle background gradient stop for info */
     val gradientInfoStop2: Color,
-    /** Subtle background gradient stop for message highlight and bloom */
     val gradientSubtleStop1: Color,
-    /** Subtle background gradient stop for message highlight and bloom */
     val gradientSubtleStop2: Color,
-    /** Subtle background gradient stop for message highlight and bloom */
     val gradientSubtleStop3: Color,
-    /** Subtle background gradient stop for message highlight and bloom */
     val gradientSubtleStop4: Color,
-    /** Subtle background gradient stop for message highlight and bloom */
     val gradientSubtleStop5: Color,
     /** Subtle background gradient stop for message highlight and bloom */
     val gradientSubtleStop6: Color,
-    /** Highest contrast accessible accent icons. */
+    /** Primary accent icon. (Pressgram blue) */
     val iconAccentPrimary: Color,
-    /** Lowest contrast accessible accent icons. */
+    /** Tertiary accent icon. (Pressgram blue) */
     val iconAccentTertiary: Color,
     /** High-contrast icon for critical state. State: Rest. */
     val iconCriticalPrimary: Color,
@@ -171,11 +164,15 @@ data class SemanticColors(
     val iconTertiary: Color,
     /** Translucent version of tertiary icon. Refer to it for intended use. */
     val iconTertiaryAlpha: Color,
-    /** Accent text colour for plain actions. */
+    /** Used to separate core sections of the UI as well as containers */
+    val separatorPrimary: Color,
+    /** Secondary shade for separating sections of components or list items */
+    val separatorSecondary: Color,
+    /** Accent text colour for plain actions. (Pressgram blue) */
     val textActionAccent: Color,
     /** Default text colour for plain actions. */
     val textActionPrimary: Color,
-    /** Badge accent text colour */
+    /** Badge accent text colour. (Pressgram blue) */
     val textBadgeAccent: Color,
     /** Badge info text colour */
     val textBadgeInfo: Color,

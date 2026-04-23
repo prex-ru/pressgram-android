@@ -130,6 +130,9 @@ object CompoundIcons {
     @Composable fun Collapse(): ImageVector {
         return ImageVector.vectorResource(R.drawable.ic_compound_collapse)
     }
+    @Composable fun CollapseAll(): ImageVector {
+        return ImageVector.vectorResource(R.drawable.ic_compound_collapse_all)
+    }
     @Composable fun Company(): ImageVector {
         return ImageVector.vectorResource(R.drawable.ic_compound_company)
     }
@@ -738,6 +741,7 @@ object CompoundIcons {
         CloudSolid(),
         Code(),
         Collapse(),
+        CollapseAll(),
         Company(),
         Compose(),
         Computer(),
@@ -967,6 +971,7 @@ object CompoundIcons {
         R.drawable.ic_compound_cloud_solid,
         R.drawable.ic_compound_code,
         R.drawable.ic_compound_collapse,
+        R.drawable.ic_compound_collapse_all,
         R.drawable.ic_compound_company,
         R.drawable.ic_compound_compose,
         R.drawable.ic_compound_computer,
