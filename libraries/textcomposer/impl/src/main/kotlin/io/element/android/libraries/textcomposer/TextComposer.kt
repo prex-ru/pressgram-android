@@ -443,11 +443,6 @@ private fun StandardLayout(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        if (isRoomEncrypted == false) {
-            Spacer(Modifier.height(16.dp))
-            NotEncryptedBadge()
-            Spacer(Modifier.height(4.dp))
-        }
         Row(verticalAlignment = Alignment.Bottom) {
             when (composerMode) {
                 is MessageComposerMode.Attachment -> {
@@ -528,28 +523,6 @@ private fun StandardLayout(
 }
 
 @Composable
-private fun NotEncryptedBadge() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            modifier = Modifier.size(16.dp),
-            imageVector = CompoundIcons.LockOff(),
-            contentDescription = null,
-            tint = ElementTheme.colors.iconInfoPrimary,
-        )
-        Spacer(Modifier.width(4.dp))
-        Text(
-            text = stringResource(CommonStrings.common_not_encrypted),
-            style = ElementTheme.typography.fontBodySmRegular,
-            color = ElementTheme.colors.textSecondary,
-        )
-    }
-}
-
-@Composable
 private fun TextFormattingLayout(
     isRoomEncrypted: Boolean?,
     textInput: @Composable () -> Unit,
@@ -562,10 +535,6 @@ private fun TextFormattingLayout(
         modifier = modifier.padding(vertical = 4.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        if (isRoomEncrypted == false) {
-            NotEncryptedBadge()
-            Spacer(Modifier.height(8.dp))
-        }
         Box(
             modifier = Modifier
                 .weight(1f)

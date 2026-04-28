@@ -514,14 +514,7 @@ private fun RoomBadge.toMatrixBadgeData(): MatrixBadgeAtom.MatrixBadgeData {
                 type = MatrixBadgeAtom.Type.Positive,
             )
         }
-        RoomBadge.NOT_ENCRYPTED -> {
-            MatrixBadgeAtom.MatrixBadgeData(
-                text = stringResource(R.string.screen_room_details_badge_not_encrypted),
-                icon = CompoundIcons.LockOff(),
-                type = MatrixBadgeAtom.Type.Info,
-            )
-        }
-        RoomBadge.PUBLIC -> {
+RoomBadge.PUBLIC -> {
             MatrixBadgeAtom.MatrixBadgeData(
                 text = stringResource(R.string.screen_room_details_badge_public),
                 icon = CompoundIcons.Public(),

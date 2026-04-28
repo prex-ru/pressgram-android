@@ -58,8 +58,6 @@ data class RoomDetailsState(
     val roomBadges = buildList {
         if (isEncrypted) {
             add(RoomBadge.ENCRYPTED)
-        } else {
-            add(RoomBadge.NOT_ENCRYPTED)
         }
         if (isPublic) {
             add(RoomBadge.PUBLIC)
@@ -93,7 +91,6 @@ sealed interface RoomTopicState {
 
 enum class RoomBadge {
     ENCRYPTED,
-    NOT_ENCRYPTED,
     PUBLIC,
     SHARED_HISTORY_HIDDEN,
     SHARED_HISTORY_SHARED,

@@ -15,24 +15,24 @@ import org.junit.Test
 
 class RoomDetailsStateTest {
     @Test
-    fun `room not public not encrypted should have not encrypted badge`() {
+    fun `room not public not encrypted should have no badges`() {
         val sut = aRoomDetailsState(
             isPublic = false,
             isEncrypted = false,
         )
         assertThat(sut.roomBadges).isEqualTo(
-            persistentListOf(RoomBadge.NOT_ENCRYPTED)
+            persistentListOf<RoomBadge>()
         )
     }
 
     @Test
-    fun `room public not encrypted should have not encrypted and public badges`() {
+    fun `room public not encrypted should have only public badge`() {
         val sut = aRoomDetailsState(
             isPublic = true,
             isEncrypted = false,
         )
         assertThat(sut.roomBadges).isEqualTo(
-            persistentListOf(RoomBadge.NOT_ENCRYPTED, RoomBadge.PUBLIC)
+            persistentListOf(RoomBadge.PUBLIC)
         )
     }
 
@@ -66,7 +66,7 @@ class RoomDetailsStateTest {
             roomHistoryVisibility = RoomHistoryVisibility.Shared
         )
         assertThat(sut.roomBadges).isEqualTo(
-            persistentListOf(RoomBadge.NOT_ENCRYPTED, RoomBadge.PUBLIC)
+            persistentListOf(RoomBadge.PUBLIC)
         )
     }
 
