@@ -354,10 +354,11 @@ class RoomDetailsViewTest {
                 state = aRoomDetailsState(
                     eventSink = EventsRecorder(expectEvents = false),
                     roomMemberDetailsState = aUserProfileState(userId = A_USER_ID),
+                    canInvite = true,
                 ),
                 invitePeople = callback,
             )
-            clickOn(CommonStrings.action_invite)
+            clickOn(R.string.screen_room_details_invite_title)
         }
     }
 }

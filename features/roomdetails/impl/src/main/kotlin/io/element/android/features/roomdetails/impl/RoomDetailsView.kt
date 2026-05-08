@@ -209,8 +209,10 @@ fun RoomDetailsView(
             }
 
             state.roomMemberDetailsState?.let { dmMemberDetails ->
-                PreferenceCategory {
-                    InviteItem(invitePeople = invitePeople)
+                if (state.canInvite) {
+                    PreferenceCategory {
+                        InviteItem(invitePeople = invitePeople)
+                    }
                 }
                 PreferenceCategory {
                     ProfileItem(
@@ -687,7 +689,7 @@ private fun InviteItem(
     invitePeople: () -> Unit,
 ) {
     ListItem(
-        headlineContent = { Text(stringResource(CommonStrings.action_invite)) },
+        headlineContent = { Text(stringResource(R.string.screen_room_details_invite_title)) },
         leadingContent = ListItemContent.Icon(IconSource.Vector(CompoundIcons.UserAdd())),
         onClick = invitePeople,
     )

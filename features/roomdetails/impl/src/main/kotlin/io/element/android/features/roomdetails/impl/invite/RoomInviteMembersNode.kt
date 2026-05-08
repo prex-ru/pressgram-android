@@ -11,6 +11,7 @@ package io.element.android.features.roomdetails.impl.invite
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.bumble.appyx.core.lifecycle.subscribe
 import com.bumble.appyx.core.modality.BuildContext
 import com.bumble.appyx.core.node.Node
@@ -28,6 +29,7 @@ import io.element.android.libraries.designsystem.components.async.AsyncActionVie
 import io.element.android.libraries.di.RoomScope
 import io.element.android.libraries.matrix.api.core.RoomId
 import io.element.android.libraries.matrix.api.room.JoinedRoom
+import io.element.android.libraries.ui.strings.CommonStrings
 import io.element.android.services.analytics.api.AnalyticsService
 
 @ContributesNode(RoomScope::class)
@@ -76,8 +78,7 @@ class RoomInviteMembersNode(
                 callback.openCreatedRoom(it)
             },
             progressDialog = {
-                // TODO: localazy
-                ProgressDialog(text = "Creating room...")
+                ProgressDialog(text = stringResource(CommonStrings.common_creating_room))
             },
             onErrorDismiss = {
                 state.eventSink(InvitePeopleEvents.ClearError)
