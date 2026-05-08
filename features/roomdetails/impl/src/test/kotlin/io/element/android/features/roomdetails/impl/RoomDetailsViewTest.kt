@@ -345,6 +345,21 @@ class RoomDetailsViewTest {
             clickOn(R.string.screen_room_details_profile_row_title)
         }
     }
+
+    @Config(qualifiers = "h1024dp")
+    @Test
+    fun `click on invite invokes the expected callback`() = runAndroidComposeUiTest {
+        ensureCalledOnce { callback ->
+            setRoomDetailView(
+                state = aRoomDetailsState(
+                    eventSink = EventsRecorder(expectEvents = false),
+                    roomMemberDetailsState = aUserProfileState(userId = A_USER_ID),
+                ),
+                invitePeople = callback,
+            )
+            clickOn(CommonStrings.action_invite)
+        }
+    }
 }
 
 private fun AndroidComposeUiTest<ComponentActivity>.setRoomDetailView(
