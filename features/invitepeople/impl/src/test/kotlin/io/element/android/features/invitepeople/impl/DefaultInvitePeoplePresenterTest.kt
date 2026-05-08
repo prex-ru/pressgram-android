@@ -847,11 +847,7 @@ internal class DefaultInvitePeoplePresenterTest {
             matrixClient = matrixClient,
             joinedRoom = FakeJoinedRoom(
                 baseRoom = FakeBaseRoom(
-                    initialRoomInfo = aRoomInfo(
-                        // TODO: use isDm instead
-                        isDirect = true,
-                        activeMembersCount = 2L,
-                    ),
+                    initialRoomInfo = aRoomInfo(isDm = true),
                     getMembersResult = { Result.success(listOf(aRoomMember(userId = alice.userId, membership = RoomMembershipState.JOIN))) },
                 )
             )
