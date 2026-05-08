@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2026 Pressgram contributors.
+  ~
+  ~ SPDX-License-Identifier: AGPL-3.0-only OR LicenseRef-Element-Commercial.
+  ~ Please see LICENSE files in the repository root for full details.
+  -->
+<resources>
+    <!-- Server detail screen (Pressgram Community Registry, scenario A) -->
+    <string name="screen_server_detail_loading_title">Loading server…</string>
+    <string name="screen_server_detail_load_error">Failed to load server information.</string>
+    <string name="screen_server_detail_signin_button">Sign in</string>
+    <string name="screen_server_detail_register_open_button">Create account</string>
+    <string name="screen_server_detail_register_with_token_button">Register (I have a code)</string>
+    <string name="screen_server_detail_request_button">Request invitation</string>
+    <string name="screen_server_detail_token_contact_format">Contact: %1$s</string>
+    <string name="screen_server_detail_coming_soon">This option is coming soon.</string>
+    <string name="screen_server_detail_mode_open">Open registration</string>
+    <string name="screen_server_detail_mode_token">Invitation token required</string>
+    <string name="screen_server_detail_mode_closed">Closed community — invitation only</string>
+    <string name="screen_server_detail_mode_unknown">Registration availability unknown</string>
+</resources>

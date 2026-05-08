@@ -38,6 +38,7 @@ import io.element.android.features.login.impl.screens.createaccount.CreateAccoun
 import io.element.android.features.login.impl.screens.loginpassword.LoginPasswordNode
 import io.element.android.features.login.impl.screens.onboarding.OnBoardingNode
 import io.element.android.features.login.impl.screens.searchaccountprovider.SearchAccountProviderNode
+import io.element.android.features.login.impl.screens.serverdetail.ServerDetailNode
 import io.element.android.libraries.androidutils.browser.openUrlInChromeCustomTab
 import io.element.android.libraries.architecture.BackstackView
 import io.element.android.libraries.architecture.BaseFlowNode
@@ -127,6 +128,9 @@ class LoginFlowNode(
 
         @Parcelize
         data class CreateAccount(val url: String) : NavTarget
+
+        @Parcelize
+        data class ServerDetail(val homeserverUrl: String) : NavTarget
     }
 
     override fun resolve(navTarget: NavTarget, buildContext: BuildContext): Node {
@@ -182,6 +186,15 @@ class LoginFlowNode(
             }
             NavTarget.ChooseAccountProvider -> {
                 val callback = object : ChooseAccountProviderNode.Callback {
+                    override fun navigateToServerDetail(homeserverUrl: String) {
+                        backstack.push(NavTarget.ServerDetail(homeserverUrl))
+                    }
+                }
+                createNode<ChooseAccountProviderNode>(buildContext, listOf(callback))
+            }
+            is NavTarget.ServerDetail -> {
+                val inputs = ServerDetailNode.Inputs(homeserverUrl = navTarget.homeserverUrl)
+                val callback = object : ServerDetailNode.Callback {
                     override fun navigateToOidc(oidcDetails: OidcDetails) {
                         navigateToMas(oidcDetails)
                     }
@@ -194,7 +207,7 @@ class LoginFlowNode(
                         backstack.push(NavTarget.LoginPassword)
                     }
                 }
-                createNode<ChooseAccountProviderNode>(buildContext, listOf(callback))
+                createNode<ServerDetailNode>(buildContext, plugins = listOf(inputs, callback))
             }
             NavTarget.QrCode -> {
                 val callback = object : QrCodeLoginFlowNode.Callback {
