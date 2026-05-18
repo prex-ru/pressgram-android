@@ -11,10 +11,12 @@ import com.google.common.truth.Truth.assertThat
 import io.element.android.libraries.communityregistry.api.CheckInviteResult
 import io.element.android.libraries.communityregistry.api.InviteRequestResult
 import io.element.android.libraries.communityregistry.api.Registration
+import io.element.android.libraries.communityregistry.api.Visibility
 import io.element.android.libraries.communityregistry.impl.dto.CheckInviteResponseDto
 import io.element.android.libraries.communityregistry.impl.dto.CommunityServerDto
 import io.element.android.libraries.communityregistry.impl.dto.InviteRequestResponseDto
 import io.element.android.libraries.communityregistry.impl.dto.RegistrationDto
+import io.element.android.libraries.communityregistry.impl.dto.ServerWhitelistResponseDto
 import org.junit.Test
 
 class MapperTest {
@@ -57,6 +59,15 @@ class MapperTest {
     }
 
     @Test
+    fun `visibility string maps to Visibility sealed type`() {
+        assertThat("public".toVisibility()).isEqualTo(Visibility.Public)
+        assertThat("PUBLIC".toVisibility()).isEqualTo(Visibility.Public)
+        assertThat("unlisted".toVisibility()).isEqualTo(Visibility.Unlisted)
+        assertThat(null.toVisibility()).isEqualTo(Visibility.Unknown)
+        assertThat("invalid".toVisibility()).isEqualTo(Visibility.Unknown)
+    }
+
+    @Test
     fun `CommunityServerDto maps full server with token registration`() {
         val dto = CommunityServerDto(
             homeserver = "newsroom.pgram.im",
@@ -64,11 +75,19 @@ class MapperTest {
             description = "Editorial server",
             logoUrl = "https://newsroom.pgram.im/logo.png",
             type = "media",
+            visibility = "public",
             registration = RegistrationDto(
                 mode = "token",
                 instructions = "Staff only",
                 contact = "invites@newsroom.example.com",
             ),
+            owner = "ООО «Новости»",
+            country = "RU",
+            language = "ru",
+            since = "2026-04-15",
+            tags = listOf("редакция"),
+            active = true,
+            lastSeen = "2026-04-28T09:00:00Z",
         )
         val server = dto.toApi()
         assertThat(server.homeserver).isEqualTo("newsroom.pgram.im")
@@ -76,6 +95,14 @@ class MapperTest {
         assertThat(server.description).isEqualTo("Editorial server")
         assertThat(server.logoUrl).isEqualTo("https://newsroom.pgram.im/logo.png")
         assertThat(server.type).isEqualTo("media")
+        assertThat(server.visibility).isEqualTo(Visibility.Public)
+        assertThat(server.owner).isEqualTo("ООО «Новости»")
+        assertThat(server.country).isEqualTo("RU")
+        assertThat(server.language).isEqualTo("ru")
+        assertThat(server.since).isEqualTo("2026-04-15")
+        assertThat(server.tags).containsExactly("редакция")
+        assertThat(server.active).isTrue()
+        assertThat(server.lastSeen).isEqualTo("2026-04-28T09:00:00Z")
         val token = server.registration as Registration.Token
         assertThat(token.instructions).isEqualTo("Staff only")
         assertThat(token.contact).isEqualTo("invites@newsroom.example.com")
@@ -92,11 +119,39 @@ class MapperTest {
     }
 
     @Test
-    fun `CheckInviteResponseDto maps to Valid when valid and homeserver present`() {
-        val dto = CheckInviteResponseDto(valid = true, homeserver = "h", displayName = "Press")
+    fun `CommunityServerDto without active flag defaults to true`() {
+        val dto = CommunityServerDto(homeserver = "h", name = "n", active = null)
+        assertThat(dto.toApi().active).isTrue()
+    }
+
+    @Test
+    fun `CheckInviteResponseDto maps to Valid when server present`() {
+        val dto = CheckInviteResponseDto(
+            valid = true,
+            server = CommunityServerDto(
+                homeserver = "newsroom.pgram.im",
+                name = "Press",
+                visibility = "public",
+            ),
+        )
         val result = dto.toApi() as CheckInviteResult.Valid
-        assertThat(result.homeserver).isEqualTo("h")
-        assertThat(result.displayName).isEqualTo("Press")
+        assertThat(result.server.homeserver).isEqualTo("newsroom.pgram.im")
+        assertThat(result.server.name).isEqualTo("Press")
+        assertThat(result.server.visibility).isEqualTo(Visibility.Public)
+    }
+
+    @Test
+    fun `CheckInviteResponseDto unlisted server is propagated`() {
+        val dto = CheckInviteResponseDto(
+            valid = true,
+            server = CommunityServerDto(
+                homeserver = "corp.example.com",
+                name = "Corp",
+                visibility = "unlisted",
+            ),
+        )
+        val result = dto.toApi() as CheckInviteResult.Valid
+        assertThat(result.server.visibility).isEqualTo(Visibility.Unlisted)
     }
 
     @Test
@@ -107,15 +162,39 @@ class MapperTest {
     }
 
     @Test
-    fun `CheckInviteResponseDto maps to Invalid when homeserver missing despite valid`() {
-        val dto = CheckInviteResponseDto(valid = true, homeserver = null, reason = "malformed")
-        val result = dto.toApi()
-        assertThat(result).isInstanceOf(CheckInviteResult.Invalid::class.java)
+    fun `CheckInviteResponseDto with only error envelope maps to Invalid carrying code`() {
+        val dto = CheckInviteResponseDto(valid = false, error = "Invalid invite", code = "INVALID_INVITE")
+        val result = dto.toApi() as CheckInviteResult.Invalid
+        assertThat(result.reason).isEqualTo("INVALID_INVITE")
+    }
+
+    @Test
+    fun `CheckInviteResponseDto maps to Invalid when server missing despite valid`() {
+        val dto = CheckInviteResponseDto(valid = true, server = null)
+        assertThat(dto.toApi()).isInstanceOf(CheckInviteResult.Invalid::class.java)
+    }
+
+    @Test
+    fun `ServerWhitelistResponseDto prefers servers field over allowed_homeservers`() {
+        val dto = ServerWhitelistResponseDto(
+            servers = listOf("pgram.im"),
+            allowedHomeservers = listOf("legacy.example"),
+        )
+        assertThat(dto.toApi()).containsExactly("pgram.im")
+    }
+
+    @Test
+    fun `ServerWhitelistResponseDto falls back to allowed_homeservers when servers empty`() {
+        val dto = ServerWhitelistResponseDto(
+            servers = emptyList(),
+            allowedHomeservers = listOf("legacy.example"),
+        )
+        assertThat(dto.toApi()).containsExactly("legacy.example")
     }
 
     @Test
     fun `InviteRequestResponseDto maps submitted variants to Submitted`() {
-        listOf("submitted", "ok", "success", "SUBMITTED").forEach { status ->
+        listOf("submitted", "ok", "success", "SUBMITTED", "queued").forEach { status ->
             assertThat(InviteRequestResponseDto(status = status).toApi())
                 .isEqualTo(InviteRequestResult.Submitted)
         }
@@ -130,9 +209,21 @@ class MapperTest {
     }
 
     @Test
-    fun `InviteRequestResponseDto maps anything else to Error`() {
+    fun `InviteRequestResponseDto maps error code to specific variant`() {
+        assertThat(InviteRequestResponseDto(code = "INVALID_EMAIL").toApi())
+            .isEqualTo(InviteRequestResult.InvalidEmail)
+        assertThat(InviteRequestResponseDto(code = "INVALID_MESSAGE").toApi())
+            .isEqualTo(InviteRequestResult.InvalidMessage)
+        assertThat(InviteRequestResponseDto(code = "NOT_ACCEPTING").toApi())
+            .isEqualTo(InviteRequestResult.NotAccepting)
+        assertThat(InviteRequestResponseDto(code = "RATE_LIMITED").toApi())
+            .isEqualTo(InviteRequestResult.RateLimited)
+    }
+
+    @Test
+    fun `InviteRequestResponseDto maps anything else to ServerError`() {
         val result = InviteRequestResponseDto(status = "weird_state", message = "oops").toApi()
-        assertThat(result).isInstanceOf(InviteRequestResult.Error::class.java)
-        assertThat((result as InviteRequestResult.Error).message).isEqualTo("oops")
+        assertThat(result).isInstanceOf(InviteRequestResult.ServerError::class.java)
+        assertThat((result as InviteRequestResult.ServerError).message).isEqualTo("oops")
     }
 }

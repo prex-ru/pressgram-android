@@ -11,6 +11,7 @@ import com.google.common.truth.Truth.assertThat
 import io.element.android.libraries.communityregistry.api.CheckInviteResult
 import io.element.android.libraries.communityregistry.api.InviteRequestResult
 import io.element.android.libraries.communityregistry.api.Registration
+import io.element.android.libraries.communityregistry.api.Visibility
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
@@ -33,40 +34,54 @@ class MockCommunityRegistryServiceTest {
     }
 
     @Test
-    fun `Token servers expose instructions and contact`() = runTest {
+    fun `Token servers expose instructions`() = runTest {
         val tokenServers = service.getCommunityServers()
             .mapNotNull { it.registration as? Registration.Token }
         assertThat(tokenServers).isNotEmpty()
         tokenServers.forEach { token ->
             assertThat(token.instructions).isNotEmpty()
-            assertThat(token.contact).isNotEmpty()
         }
     }
 
     @Test
-    fun `getServerWhitelist contains pgram domain`() = runTest {
-        assertThat(service.getServerWhitelist()).contains("pgram.im")
+    fun `getCommunityServers exposes only public visibility entries`() = runTest {
+        val visibilities = service.getCommunityServers().map { it.visibility }.toSet()
+        assertThat(visibilities).containsExactly(Visibility.Public)
     }
 
     @Test
-    fun `checkInvite valid token returns Valid`() = runTest {
-        val result = service.checkInvite("https://newsroom.pgram.im", "press-2026-ok")
+    fun `getServerWhitelist matches spec section 10_2 public domains`() = runTest {
+        assertThat(service.getServerWhitelist()).containsExactly(
+            "pgram.im",
+            "x.pgram.im",
+            "newsroom.pgram.im",
+            "prexplore.pgram.im",
+            "archive.pgram.im",
+        ).inOrder()
+    }
+
+    @Test
+    fun `checkInvite newsroom token returns public server metadata`() = runTest {
+        val result = service.checkInvite("https://newsroom.pgram.im", "newsroom-2026-VALID")
         assertThat(result).isInstanceOf(CheckInviteResult.Valid::class.java)
-        result as CheckInviteResult.Valid
-        assertThat(result.homeserver).isEqualTo("https://newsroom.pgram.im")
+        val valid = result as CheckInviteResult.Valid
+        assertThat(valid.server.homeserver).isEqualTo("newsroom.pgram.im")
+        assertThat(valid.server.visibility).isEqualTo(Visibility.Public)
     }
 
     @Test
-    fun `checkInvite expired token returns Invalid expired`() = runTest {
-        val result = service.checkInvite("https://newsroom.pgram.im", "press-2025-expired")
-        assertThat(result).isInstanceOf(CheckInviteResult.Invalid::class.java)
-        assertThat((result as CheckInviteResult.Invalid).reason).isEqualTo("expired")
+    fun `checkInvite corpa token reveals unlisted server metadata`() = runTest {
+        val result = service.checkInvite("client-corp-a.example.com", "corpa-mngr-WzqA")
+        assertThat(result).isInstanceOf(CheckInviteResult.Valid::class.java)
+        val valid = result as CheckInviteResult.Valid
+        assertThat(valid.server.visibility).isEqualTo(Visibility.Unlisted)
+        assertThat(valid.server.name).isEqualTo("Корпорация А")
     }
 
     @Test
-    fun `checkInvite unknown token returns Invalid not_found`() = runTest {
+    fun `checkInvite unknown token returns single INVALID_INVITE`() = runTest {
         val result = service.checkInvite("https://x.pgram.im", "garbage") as CheckInviteResult.Invalid
-        assertThat(result.reason).isEqualTo("not_found")
+        assertThat(result.reason).isEqualTo("INVALID_INVITE")
     }
 
     @Test
@@ -90,13 +105,43 @@ class MockCommunityRegistryServiceTest {
     }
 
     @Test
+    fun `submitInviteRequest reports NotAccepting for marker email`() = runTest {
+        val result = service.submitInviteRequest(
+            homeserver = "https://newsroom.pgram.im",
+            email = "anyone@notaccepting.test",
+            message = "I would like to join because I write for X paper.",
+        )
+        assertThat(result).isEqualTo(InviteRequestResult.NotAccepting)
+    }
+
+    @Test
+    fun `submitInviteRequest reports ServerError for marker email`() = runTest {
+        val result = service.submitInviteRequest(
+            homeserver = "https://newsroom.pgram.im",
+            email = "anyone@servererror.test",
+            message = "I would like to join because I write for X paper.",
+        )
+        assertThat(result).isInstanceOf(InviteRequestResult.ServerError::class.java)
+    }
+
+    @Test
     fun `submitInviteRequest rejects too short message`() = runTest {
         val result = service.submitInviteRequest(
             homeserver = "https://newsroom.pgram.im",
             email = "user@example.com",
             message = "short",
         )
-        assertThat(result).isInstanceOf(InviteRequestResult.Error::class.java)
+        assertThat(result).isEqualTo(InviteRequestResult.InvalidMessage)
+    }
+
+    @Test
+    fun `submitInviteRequest rejects too long message`() = runTest {
+        val result = service.submitInviteRequest(
+            homeserver = "https://newsroom.pgram.im",
+            email = "user@example.com",
+            message = "x".repeat(1001),
+        )
+        assertThat(result).isEqualTo(InviteRequestResult.InvalidMessage)
     }
 
     @Test
@@ -106,6 +151,6 @@ class MockCommunityRegistryServiceTest {
             email = "no-at-sign",
             message = "I would like to join because I write for X paper.",
         )
-        assertThat(result).isInstanceOf(InviteRequestResult.Error::class.java)
+        assertThat(result).isEqualTo(InviteRequestResult.InvalidEmail)
     }
 }

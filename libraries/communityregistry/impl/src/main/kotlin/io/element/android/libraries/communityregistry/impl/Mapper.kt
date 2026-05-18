@@ -11,10 +11,12 @@ import io.element.android.libraries.communityregistry.api.CheckInviteResult
 import io.element.android.libraries.communityregistry.api.CommunityServer
 import io.element.android.libraries.communityregistry.api.InviteRequestResult
 import io.element.android.libraries.communityregistry.api.Registration
+import io.element.android.libraries.communityregistry.api.Visibility
 import io.element.android.libraries.communityregistry.impl.dto.CheckInviteResponseDto
 import io.element.android.libraries.communityregistry.impl.dto.CommunityServerDto
 import io.element.android.libraries.communityregistry.impl.dto.InviteRequestResponseDto
 import io.element.android.libraries.communityregistry.impl.dto.RegistrationDto
+import io.element.android.libraries.communityregistry.impl.dto.ServerWhitelistResponseDto
 
 internal fun CommunityServerDto.toApi(): CommunityServer = CommunityServer(
     homeserver = homeserver,
@@ -22,8 +24,22 @@ internal fun CommunityServerDto.toApi(): CommunityServer = CommunityServer(
     description = description,
     logoUrl = logoUrl,
     type = type,
+    visibility = visibility.toVisibility(),
     registration = registration.toRegistration(),
+    owner = owner,
+    country = country,
+    language = language,
+    since = since,
+    tags = tags,
+    active = active ?: true,
+    lastSeen = lastSeen,
 )
+
+internal fun String?.toVisibility(): Visibility = when (this?.lowercase()) {
+    "public" -> Visibility.Public
+    "unlisted" -> Visibility.Unlisted
+    else -> Visibility.Unknown
+}
 
 internal fun RegistrationDto?.toRegistration(): Registration = when (this?.mode?.lowercase()) {
     "open" -> Registration.Open
@@ -32,14 +48,28 @@ internal fun RegistrationDto?.toRegistration(): Registration = when (this?.mode?
     else -> Registration.Unknown
 }
 
-internal fun CheckInviteResponseDto.toApi(): CheckInviteResult = if (valid && homeserver != null) {
-    CheckInviteResult.Valid(homeserver = homeserver, displayName = displayName)
+internal fun ServerWhitelistResponseDto.toApi(): List<String> =
+    servers.ifEmpty { allowedHomeservers }
+
+internal fun CheckInviteResponseDto.toApi(): CheckInviteResult = if (valid && server != null) {
+    CheckInviteResult.Valid(server.toApi())
 } else {
-    CheckInviteResult.Invalid(reason = reason)
+    // Spec §3.3 ships a single INVALID_INVITE. Fall back to whichever field the server
+    // included so dev surfaces and tests can introspect; production UI shows one message.
+    CheckInviteResult.Invalid(reason = reason ?: code ?: error)
 }
 
-internal fun InviteRequestResponseDto.toApi(): InviteRequestResult = when (status.lowercase()) {
-    "submitted", "ok", "success" -> InviteRequestResult.Submitted
-    "rate_limited", "rate-limited" -> InviteRequestResult.RateLimited
-    else -> InviteRequestResult.Error(message)
+internal fun InviteRequestResponseDto.toApi(): InviteRequestResult {
+    // Prefer the error envelope `code` (spec §3.4 4xx/5xx responses).
+    when (code?.uppercase()) {
+        "INVALID_EMAIL" -> return InviteRequestResult.InvalidEmail
+        "INVALID_MESSAGE" -> return InviteRequestResult.InvalidMessage
+        "NOT_ACCEPTING" -> return InviteRequestResult.NotAccepting
+        "RATE_LIMITED" -> return InviteRequestResult.RateLimited
+    }
+    return when (status?.lowercase()) {
+        "submitted", "ok", "success", "queued" -> InviteRequestResult.Submitted
+        "rate_limited", "rate-limited" -> InviteRequestResult.RateLimited
+        else -> InviteRequestResult.ServerError(message ?: error)
+    }
 }

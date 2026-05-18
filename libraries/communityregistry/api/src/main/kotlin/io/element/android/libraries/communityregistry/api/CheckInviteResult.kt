@@ -8,10 +8,6 @@
 package io.element.android.libraries.communityregistry.api
 
 sealed interface CheckInviteResult {
-    data class Valid(
-        val homeserver: String,
-        val displayName: String?,
-    ) : CheckInviteResult
-
+    data class Valid(val server: CommunityServer) : CheckInviteResult
     data class Invalid(val reason: String?) : CheckInviteResult
 }

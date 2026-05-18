@@ -9,6 +9,9 @@ package io.element.android.libraries.communityregistry.api
 
 sealed interface InviteRequestResult {
     data object Submitted : InviteRequestResult
+    data object InvalidEmail : InviteRequestResult
+    data object InvalidMessage : InviteRequestResult
+    data object NotAccepting : InviteRequestResult
     data object RateLimited : InviteRequestResult
-    data class Error(val message: String?) : InviteRequestResult
+    data class ServerError(val message: String?) : InviteRequestResult
 }

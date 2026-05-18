@@ -23,7 +23,7 @@ class DefaultCommunityRegistryService(
         apiFactory.create().getCommunityServers().servers.map { it.toApi() }
 
     override suspend fun getServerWhitelist(): List<String> =
-        apiFactory.create().getServerWhitelist().allowedHomeservers
+        apiFactory.create().getServerWhitelist().toApi()
 
     override suspend fun checkInvite(homeserver: String, token: String): CheckInviteResult =
         apiFactory.create()

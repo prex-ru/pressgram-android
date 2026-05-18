@@ -26,7 +26,13 @@ data class CommunityServerDto(
     @SerialName("type") val type: String? = null,
     @SerialName("visibility") val visibility: String? = null,
     @SerialName("registration") val registration: RegistrationDto? = null,
+    @SerialName("owner") val owner: String? = null,
+    @SerialName("country") val country: String? = null,
+    @SerialName("language") val language: String? = null,
+    @SerialName("since") val since: String? = null,
+    @SerialName("tags") val tags: List<String> = emptyList(),
     @SerialName("active") val active: Boolean? = null,
+    @SerialName("last_seen") val lastSeen: String? = null,
 )
 
 @Serializable
@@ -38,6 +44,9 @@ data class RegistrationDto(
 
 @Serializable
 data class ServerWhitelistResponseDto(
+    @SerialName("version") val version: Int? = null,
+    @SerialName("updated_at") val updatedAt: String? = null,
+    @SerialName("servers") val servers: List<String> = emptyList(),
     @SerialName("allowed_homeservers") val allowedHomeservers: List<String> = emptyList(),
 )
 
@@ -49,10 +58,11 @@ data class CheckInviteRequestDto(
 
 @Serializable
 data class CheckInviteResponseDto(
-    @SerialName("valid") val valid: Boolean,
-    @SerialName("homeserver") val homeserver: String? = null,
-    @SerialName("display_name") val displayName: String? = null,
+    @SerialName("valid") val valid: Boolean = false,
+    @SerialName("server") val server: CommunityServerDto? = null,
     @SerialName("reason") val reason: String? = null,
+    @SerialName("error") val error: String? = null,
+    @SerialName("code") val code: String? = null,
 )
 
 @Serializable
@@ -64,6 +74,8 @@ data class InviteRequestRequestDto(
 
 @Serializable
 data class InviteRequestResponseDto(
-    @SerialName("status") val status: String,
+    @SerialName("status") val status: String? = null,
     @SerialName("message") val message: String? = null,
+    @SerialName("error") val error: String? = null,
+    @SerialName("code") val code: String? = null,
 )
