@@ -19,4 +19,10 @@
     <string name="screen_server_detail_mode_token">Invitation token required</string>
     <string name="screen_server_detail_mode_closed">Closed community — invitation only</string>
     <string name="screen_server_detail_mode_unknown">Registration availability unknown</string>
+
+    <!-- Pressgram brand block on the server-detail screen -->
+    <string name="screen_server_detail_brand_name">Pressgram</string>
+    <string name="screen_server_detail_pressgram_tagline">Decentralized messenger for the media community</string>
+    <string name="screen_server_detail_server_label_format">Server: %1$s</string>
+    <string name="screen_server_detail_change_server">Change server</string>
 </resources>

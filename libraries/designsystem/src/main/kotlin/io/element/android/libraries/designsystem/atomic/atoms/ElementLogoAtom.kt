@@ -50,9 +50,9 @@ sealed class ElementLogoAtomSize(
     )
 
     data object Large : ElementLogoAtomSize(
-        outerSize = 158.dp,
-        cornerRadius = 44.dp,
-        shadowRadius = 60.dp,
+        outerSize = 96.dp,
+        cornerRadius = 22.dp,
+        shadowRadius = 44.dp,
     )
 }
 

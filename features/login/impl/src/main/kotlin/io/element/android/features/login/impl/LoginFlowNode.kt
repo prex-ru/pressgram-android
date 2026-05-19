@@ -206,6 +206,12 @@ class LoginFlowNode(
                     override fun navigateToLoginPassword() {
                         backstack.push(NavTarget.LoginPassword)
                     }
+
+                    // Step 3 (spec §5.3) replaces this with backstack.singleTop(NavTarget.ServerCatalog).
+                    // For now we pop back to the upstream account-provider picker so the link still works.
+                    override fun navigateToChangeServer() {
+                        backstack.pop()
+                    }
                 }
                 createNode<ServerDetailNode>(buildContext, plugins = listOf(inputs, callback))
             }

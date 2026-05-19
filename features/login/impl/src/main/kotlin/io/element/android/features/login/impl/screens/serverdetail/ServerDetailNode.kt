@@ -43,6 +43,7 @@ class ServerDetailNode(
         fun navigateToLoginPassword()
         fun navigateToOidc(oidcDetails: OidcDetails)
         fun navigateToCreateAccount(url: String)
+        fun navigateToChangeServer()
     }
 
     private val callback: Callback = callback()
@@ -59,6 +60,7 @@ class ServerDetailNode(
             onNeedLoginPassword = callback::navigateToLoginPassword,
             onLearnMoreClick = { openLearnMorePage(context) },
             onCreateAccountContinue = callback::navigateToCreateAccount,
+            onChangeServer = callback::navigateToChangeServer,
         )
     }
 }

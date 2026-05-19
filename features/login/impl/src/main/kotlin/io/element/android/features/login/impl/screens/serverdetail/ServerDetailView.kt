@@ -9,6 +9,7 @@
 
 package io.element.android.features.login.impl.screens.serverdetail
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -27,20 +29,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import io.element.android.compound.theme.ElementTheme
-import io.element.android.compound.tokens.generated.CompoundIcons
 import io.element.android.features.login.impl.R
 import io.element.android.features.login.impl.login.LoginModeView
 import io.element.android.libraries.architecture.AsyncData
 import io.element.android.libraries.communityregistry.api.Registration
+import io.element.android.libraries.designsystem.R as DesignSystemR
 import io.element.android.libraries.designsystem.atomic.molecules.ButtonColumnMolecule
-import io.element.android.libraries.designsystem.atomic.molecules.IconTitleSubtitleMolecule
 import io.element.android.libraries.designsystem.atomic.pages.HeaderFooterPage
-import io.element.android.libraries.designsystem.components.BigIcon
 import io.element.android.libraries.designsystem.components.button.BackButton
 import io.element.android.libraries.designsystem.preview.ElementPreview
 import io.element.android.libraries.designsystem.preview.PreviewsDayNight
@@ -60,6 +61,7 @@ fun ServerDetailView(
     onNeedLoginPassword: () -> Unit,
     onLearnMoreClick: () -> Unit,
     onCreateAccountContinue: (url: String) -> Unit,
+    onChangeServer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isLoading by remember(state.loginMode) {
@@ -85,6 +87,7 @@ fun ServerDetailView(
                     isLoading = isLoading,
                     onRegister = { state.eventSink(ServerDetailEvents.Register) },
                     onSignIn = { state.eventSink(ServerDetailEvents.SignIn) },
+                    onChangeServer = onChangeServer,
                     onComingSoon = {
                         scope.launch { snackbarHostState.showSnackbar(comingSoonMessage) }
                     },
@@ -110,16 +113,42 @@ fun ServerDetailView(
 
 @Composable
 private fun ServerDetailHeader(serverInfo: AsyncData<ServerDetailInfo>) {
-    val title = (serverInfo as? AsyncData.Success)?.data?.name
-        ?: stringResource(id = R.string.screen_server_detail_loading_title)
-    IconTitleSubtitleMolecule(
-        modifier = Modifier.padding(top = 60.dp),
-        iconStyle = BigIcon.Style.Default(CompoundIcons.HomeSolid()),
-        title = title,
-        subTitle = (serverInfo as? AsyncData.Success)?.data?.homeserverUrl
-            ?.removePrefix("https://")
-            ?.removePrefix("http://"),
-    )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 60.dp, bottom = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Image(
+            painter = painterResource(id = DesignSystemR.drawable.pressgram_logo),
+            contentDescription = null,
+            modifier = Modifier.size(88.dp),
+        )
+        Spacer(Modifier.height(20.dp))
+        Text(
+            text = stringResource(id = R.string.screen_server_detail_brand_name),
+            style = ElementTheme.typography.fontHeadingLgBold,
+            color = ElementTheme.colors.textPrimary,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(4.dp))
+        Text(
+            text = stringResource(id = R.string.screen_server_detail_pressgram_tagline),
+            style = ElementTheme.typography.fontBodyMdRegular,
+            color = ElementTheme.colors.textSecondary,
+            textAlign = TextAlign.Center,
+        )
+        val serverName = (serverInfo as? AsyncData.Success)?.data?.name
+        if (!serverName.isNullOrBlank()) {
+            Spacer(Modifier.height(12.dp))
+            Text(
+                text = stringResource(id = R.string.screen_server_detail_server_label_format, serverName),
+                style = ElementTheme.typography.fontBodySmMedium,
+                color = ElementTheme.colors.textSecondary,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
 }
 
 @Composable
@@ -195,9 +224,13 @@ private fun ServerDetailFooter(
     isLoading: Boolean,
     onRegister: () -> Unit,
     onSignIn: () -> Unit,
+    onChangeServer: () -> Unit,
     onComingSoon: () -> Unit,
 ) {
     val registration = (serverInfo as? AsyncData.Success)?.data?.registration
+    // TODO(spec §5.4): a small QR-icon button should sit next to «Регистрация (требуется код)»
+    //  in the Figma. Purpose still pending @Designer_h clarification — keeping the column
+    //  vertical for now so we don't add UI we'll have to throw away.
     ButtonColumnMolecule {
         Button(
             text = stringResource(id = R.string.screen_server_detail_signin_button),
@@ -233,6 +266,12 @@ private fun ServerDetailFooter(
             Registration.Unknown,
             null -> Unit
         }
+        TextButton(
+            text = stringResource(id = R.string.screen_server_detail_change_server),
+            onClick = onChangeServer,
+            enabled = !isLoading,
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 
@@ -253,5 +292,6 @@ internal fun ServerDetailViewPreview(@PreviewParameter(ServerDetailStateProvider
         onNeedLoginPassword = {},
         onLearnMoreClick = {},
         onCreateAccountContinue = {},
+        onChangeServer = {},
     )
 }
