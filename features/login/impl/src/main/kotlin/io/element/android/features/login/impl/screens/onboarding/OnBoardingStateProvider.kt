@@ -31,6 +31,7 @@ open class OnBoardingStateProvider : PreviewParameterProvider<OnBoardingState> {
 //            ),
             // Pressgram welcome — Open registration variant.
             anOnBoardingState(
+                selectedHomeserverUrl = "https://pgram.im",
                 selectedServerName = "Pressgram",
                 selectedServerFqdn = "pgram.im",
                 selectedServerDescription = "Главный сервер сети. Открытая регистрация для всех журналистов и медиапрофессионалов.",
@@ -38,6 +39,7 @@ open class OnBoardingStateProvider : PreviewParameterProvider<OnBoardingState> {
             ),
             // Pressgram welcome — Token (invitation-only) variant.
             anOnBoardingState(
+                selectedHomeserverUrl = "https://newsroom.pgram.im",
                 selectedServerName = "Редакция «Новости»",
                 selectedServerFqdn = "newsroom.pgram.im",
                 selectedServerDescription = "Внутренний сервер редакции газеты «Новости». Журналисты, редакторы, корреспонденты.",
@@ -59,6 +61,7 @@ fun anOnBoardingState(
     customLogoResId: Int? = null,
     loginMode: AsyncData<LoginMode> = AsyncData.Uninitialized,
     loginWithClassicState: LoginWithClassicState = aLoginWithClassicState(),
+    selectedHomeserverUrl: String? = null,
     selectedServerName: String? = null,
     selectedServerFqdn: String? = null,
     selectedServerDescription: String? = null,
@@ -77,6 +80,7 @@ fun anOnBoardingState(
     loginMode = loginMode,
     onBoardingLogoResId = customLogoResId,
     loginWithClassicState = loginWithClassicState,
+    selectedHomeserverUrl = selectedHomeserverUrl,
     selectedServerName = selectedServerName,
     selectedServerFqdn = selectedServerFqdn,
     selectedServerDescription = selectedServerDescription,

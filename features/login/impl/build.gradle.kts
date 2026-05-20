@@ -72,6 +72,8 @@ dependencies {
     implementation(projects.libraries.uiUtils)
     implementation(projects.libraries.wellknown.api)
     implementation(projects.libraries.communityregistry.api)
+    implementation(projects.libraries.preferences.api)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.browser)
     implementation(libs.androidx.webkit)
     implementation(libs.serialization.json)
@@ -89,6 +91,7 @@ dependencies {
     testImplementation(projects.libraries.sessionStorage.test)
     testImplementation(projects.libraries.wellknown.test)
     testImplementation(projects.libraries.communityregistry.test)
+    testImplementation(projects.libraries.preferences.test)
     testImplementation(libs.androidx.camera.camera2)
     testImplementation(libs.androidx.camera.lifecycle)
 }

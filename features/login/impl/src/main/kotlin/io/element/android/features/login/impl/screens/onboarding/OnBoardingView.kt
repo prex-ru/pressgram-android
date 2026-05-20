@@ -109,7 +109,13 @@ fun OnBoardingView(
     val pressgramButtons = @Composable {
         PressgramOnboardingButtons(
             state = state,
-            onSignInWithPassword = { onSignIn(state.mustChooseAccountProvider) },
+            onSignInWithPassword = {
+                // The server is already chosen on the welcome screen, so sign in
+                // straight against it instead of routing through the provider picker.
+                state.selectedHomeserverUrl?.let { url ->
+                    state.eventSink(OnBoardingEvents.OnSignIn(url))
+                }
+            },
             onSignInWithQrCode = onSignInWithQrCode,
             onRegister = onCreateAccount,
             onRequestInvite = { /* TODO: wire after Nikita spec finalises invite-request entry-point */ },
@@ -400,9 +406,14 @@ private fun PressgramOnboardingButtons(
     onRegister: () -> Unit,
     onRequestInvite: () -> Unit,
 ) {
+    val isLoading by remember(state.loginMode) {
+        derivedStateOf { state.loginMode is AsyncData.Loading }
+    }
     ButtonColumnMolecule {
         Button(
             text = stringResource(id = R.string.screen_onboarding_pressgram_signin_password),
+            showProgress = isLoading,
+            enabled = !isLoading,
             onClick = onSignInWithPassword,
             modifier = Modifier.fillMaxWidth(),
         )

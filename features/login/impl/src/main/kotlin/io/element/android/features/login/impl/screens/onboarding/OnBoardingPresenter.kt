@@ -25,6 +25,7 @@ import io.element.android.features.enterprise.api.EnterpriseService
 import io.element.android.features.enterprise.api.canConnectToAnyHomeserver
 import io.element.android.features.login.impl.accesscontrol.DefaultAccountProviderAccessControl
 import io.element.android.features.login.impl.accountprovider.AccountProviderDataSource
+import io.element.android.features.login.impl.accountprovider.SelectedHomeserverStore
 import io.element.android.features.login.impl.login.LoginHelper
 import io.element.android.features.login.impl.screens.onboarding.classic.LoginWithClassicState
 import io.element.android.features.rageshake.api.RageshakeFeatureAvailability
@@ -50,6 +51,7 @@ class OnBoardingPresenter(
     private val onBoardingLogoResIdProvider: OnBoardingLogoResIdProvider,
     private val sessionStore: SessionStore,
     private val accountProviderDataSource: AccountProviderDataSource,
+    private val selectedHomeserverStore: SelectedHomeserverStore,
     private val loginWithClassicPresenter: Presenter<LoginWithClassicState>,
     private val communityRegistryService: CommunityRegistryService,
 ) : Presenter<OnBoardingState> {
@@ -93,9 +95,14 @@ class OnBoardingPresenter(
             forcedAccountProvider ?: linkAccountProvider
         }
 
-        val selectedAccountProvider by accountProviderDataSource.flow.collectAsState()
-        val targetHomeserverUrl = remember(selectedAccountProvider, defaultAccountProvider) {
-            selectedAccountProvider.url.takeIf { it.isNotBlank() }
+        // The welcome block follows the homeserver the user last picked on the
+        // Server Catalog screen. That choice is persisted to disk, so it survives
+        // an app restart; until it is read (or when nothing was ever picked) we
+        // fall back to the default account provider.
+        val persistedHomeserverUrl by remember { selectedHomeserverStore.selectedHomeserverUrl() }
+            .collectAsState(initial = null)
+        val targetHomeserverUrl = remember(persistedHomeserverUrl, defaultAccountProvider) {
+            persistedHomeserverUrl?.takeIf { it.isNotBlank() }
                 ?: defaultAccountProvider
                 ?: enterpriseService.defaultHomeserverList().firstOrNull()
         }
@@ -160,6 +167,7 @@ class OnBoardingPresenter(
             version = buildMeta.versionName,
             onBoardingLogoResId = onBoardingLogoResId,
             loginWithClassicState = loginWithClassicState,
+            selectedHomeserverUrl = targetHomeserverUrl,
             selectedServerName = defaultCommunityServer?.name,
             selectedServerFqdn = defaultCommunityServer?.homeserver
                 ?: targetHomeserverUrl?.removePrefix("https://")?.removePrefix("http://"),

@@ -40,29 +40,16 @@ class OnboardingViewTest {
     // region Pressgram welcome screen (AddFirstAccountScaffold + PressgramOnboardingButtons)
 
     @Test
-    fun `clicking on sign in with password calls the sign in callback - cannot search account provider`() {
-        `clicking on sign in with password calls the sign in callback`(mustChooseAccountProvider = false)
-    }
-
-    @Test
-    fun `clicking on sign in with password calls the sign in callback - can search account provider`() {
-        `clicking on sign in with password calls the sign in callback`(mustChooseAccountProvider = true)
-    }
-
-    private fun `clicking on sign in with password calls the sign in callback`(
-        mustChooseAccountProvider: Boolean,
-    ) {
-        val eventSink = EventsRecorder<OnBoardingEvents>(expectEvents = false)
-        ensureCalledOnceWithParam(mustChooseAccountProvider) { callback ->
-            rule.setOnboardingView(
-                state = anOnBoardingState(
-                    mustChooseAccountProvider = mustChooseAccountProvider,
-                    eventSink = eventSink,
-                ),
-                onSignIn = callback,
-            )
-            rule.clickOn(R.string.screen_onboarding_pressgram_signin_password)
-        }
+    fun `clicking on sign in with password emits the sign in event for the selected server`() {
+        val eventSink = EventsRecorder<OnBoardingEvents>()
+        rule.setOnboardingView(
+            state = anOnBoardingState(
+                selectedHomeserverUrl = "https://pgram.im",
+                eventSink = eventSink,
+            ),
+        )
+        rule.clickOn(R.string.screen_onboarding_pressgram_signin_password)
+        eventSink.assertSingle(OnBoardingEvents.OnSignIn("https://pgram.im"))
     }
 
     @Test

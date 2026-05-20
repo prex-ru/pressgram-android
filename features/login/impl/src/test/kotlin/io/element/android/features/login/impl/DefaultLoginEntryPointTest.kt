@@ -15,7 +15,9 @@ import com.google.common.truth.Truth.assertThat
 import io.element.android.features.enterprise.test.FakeEnterpriseService
 import io.element.android.features.login.api.LoginEntryPoint
 import io.element.android.features.login.impl.accountprovider.AccountProviderDataSource
+import io.element.android.features.login.impl.accountprovider.SelectedHomeserverStore
 import io.element.android.libraries.oidc.test.customtab.FakeOidcActionFlow
+import io.element.android.libraries.preferences.test.FakePreferenceDataStoreFactory
 import io.element.android.tests.testutils.lambda.lambdaError
 import io.element.android.tests.testutils.node.TestParentNode
 import kotlinx.coroutines.test.runTest
@@ -37,6 +39,7 @@ class DefaultLoginEntryPointTest {
                 buildContext = buildContext,
                 plugins = plugins,
                 accountProviderDataSource = AccountProviderDataSource(FakeEnterpriseService()),
+                selectedHomeserverStore = SelectedHomeserverStore(FakePreferenceDataStoreFactory()),
                 oidcActionFlow = FakeOidcActionFlow(),
                 appCoroutineScope = backgroundScope,
             )

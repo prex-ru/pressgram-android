@@ -15,22 +15,32 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import dev.zacsweers.metro.Inject
-import io.element.android.features.login.impl.accountprovider.AccountProviderDataSource
+import io.element.android.features.enterprise.api.EnterpriseService
+import io.element.android.features.login.impl.accountprovider.SelectedHomeserverStore
 import io.element.android.libraries.architecture.AsyncData
 import io.element.android.libraries.architecture.Presenter
 import io.element.android.libraries.communityregistry.api.CommunityRegistryService
 import io.element.android.libraries.communityregistry.api.CommunityServer
+import io.element.android.libraries.core.uri.ensureProtocol
 import timber.log.Timber
 
 @Inject
 class ServerCatalogPresenter(
     private val communityRegistryService: CommunityRegistryService,
-    private val accountProviderDataSource: AccountProviderDataSource,
+    private val selectedHomeserverStore: SelectedHomeserverStore,
+    private val enterpriseService: EnterpriseService,
 ) : Presenter<ServerCatalogState> {
     @Composable
     override fun present(): ServerCatalogState {
         var retryCount by remember { mutableIntStateOf(0) }
-        val selectedAccountProvider by accountProviderDataSource.flow.collectAsState()
+        // Mark the entry the welcome screen currently uses: the persisted pick if
+        // there is one, otherwise the default homeserver.
+        val persistedHomeserver by remember { selectedHomeserverStore.selectedHomeserverUrl() }
+            .collectAsState(initial = null)
+        val selectedHomeserver = remember(persistedHomeserver) {
+            persistedHomeserver?.takeIf { it.isNotBlank() }
+                ?: enterpriseService.defaultHomeserverList().firstOrNull()?.ensureProtocol()
+        }
 
         val servers by produceState<AsyncData<List<CommunityServer>>>(AsyncData.Loading(), retryCount) {
             value = AsyncData.Loading()
@@ -50,7 +60,7 @@ class ServerCatalogPresenter(
 
         return ServerCatalogState(
             servers = servers,
-            selectedHomeserver = selectedAccountProvider.url,
+            selectedHomeserver = selectedHomeserver,
             eventSink = ::handleEvent,
         )
     }

@@ -26,6 +26,7 @@ data class OnBoardingState(
     val onBoardingLogoResId: Int?,
     val loginMode: AsyncData<LoginMode>,
     val loginWithClassicState: LoginWithClassicState,
+    val selectedHomeserverUrl: String? = null,
     val selectedServerName: String? = null,
     val selectedServerFqdn: String? = null,
     val selectedServerDescription: String? = null,

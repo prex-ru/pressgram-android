@@ -30,6 +30,7 @@ import io.element.android.annotations.ContributesNode
 import io.element.android.compound.theme.ElementTheme
 import io.element.android.features.login.api.LoginEntryPoint
 import io.element.android.features.login.impl.accountprovider.AccountProviderDataSource
+import io.element.android.features.login.impl.accountprovider.SelectedHomeserverStore
 import io.element.android.features.login.impl.qrcode.QrCodeLoginFlowNode
 import io.element.android.features.login.impl.screens.changeaccountprovider.ChangeAccountProviderNode
 import io.element.android.features.login.impl.screens.chooseaccountprovider.ChooseAccountProviderNode
@@ -54,6 +55,7 @@ import io.element.android.libraries.oidc.api.OidcAction
 import io.element.android.libraries.oidc.api.OidcActionFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 
@@ -63,6 +65,7 @@ class LoginFlowNode(
     @Assisted buildContext: BuildContext,
     @Assisted plugins: List<Plugin>,
     private val accountProviderDataSource: AccountProviderDataSource,
+    private val selectedHomeserverStore: SelectedHomeserverStore,
     private val oidcActionFlow: OidcActionFlow,
     @AppCoroutineScope
     private val appCoroutineScope: CoroutineScope,
@@ -87,6 +90,11 @@ class LoginFlowNode(
 
     override fun onBuilt() {
         super.onBuilt()
+        lifecycleScope.launch {
+            selectedHomeserverStore.selectedHomeserverUrl().first()
+                ?.takeIf { it.isNotBlank() }
+                ?.let { accountProviderDataSource.setUrl(it) }
+        }
         lifecycle.subscribe(
             onResume = {
                 if (externalAppStarted) {
@@ -225,10 +233,13 @@ class LoginFlowNode(
             NavTarget.ServerCatalog -> {
                 val callback = object : ServerCatalogNode.Callback {
                     override fun onServerSelected(homeserverUrl: String) {
-                        // Persist the picked server so the Welcome screen (and the
-                        // rest of the login flow) reflects it, then return to Welcome.
+                        // Persist the picked server (survives restart) and update the
+                        // in-flow account provider so every login screen reflects it;
+                        // then return to wherever the catalog was opened from.
+                        val url = homeserverUrl.ensureProtocol()
                         appCoroutineScope.launch {
-                            accountProviderDataSource.setUrl(homeserverUrl.ensureProtocol())
+                            selectedHomeserverStore.setSelectedHomeserverUrl(url)
+                            accountProviderDataSource.setUrl(url)
                         }
                         backstack.pop()
                     }
@@ -261,7 +272,8 @@ class LoginFlowNode(
                     }
 
                     override fun navigateToChangeAccountProvider() {
-                        backstack.push(NavTarget.ChangeAccountProvider)
+                        // Pressgram: the account-provider picker is our community catalog.
+                        backstack.push(NavTarget.ServerCatalog)
                     }
                 }
                 createNode<ConfirmAccountProviderNode>(buildContext, plugins = listOf(inputs, callback))
