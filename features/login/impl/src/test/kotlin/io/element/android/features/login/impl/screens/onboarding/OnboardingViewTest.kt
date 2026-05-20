@@ -37,20 +37,104 @@ class OnboardingViewTest {
     @get:Rule
     val rule = createAndroidComposeRule<ComponentActivity>()
 
+    // region Pressgram welcome screen (AddFirstAccountScaffold + PressgramOnboardingButtons)
+
     @Test
-    fun `when can create account - clicking on create account calls the expected callback`() {
+    fun `clicking on sign in with password calls the sign in callback - cannot search account provider`() {
+        `clicking on sign in with password calls the sign in callback`(mustChooseAccountProvider = false)
+    }
+
+    @Test
+    fun `clicking on sign in with password calls the sign in callback - can search account provider`() {
+        `clicking on sign in with password calls the sign in callback`(mustChooseAccountProvider = true)
+    }
+
+    private fun `clicking on sign in with password calls the sign in callback`(
+        mustChooseAccountProvider: Boolean,
+    ) {
+        val eventSink = EventsRecorder<OnBoardingEvents>(expectEvents = false)
+        ensureCalledOnceWithParam(mustChooseAccountProvider) { callback ->
+            rule.setOnboardingView(
+                state = anOnBoardingState(
+                    mustChooseAccountProvider = mustChooseAccountProvider,
+                    eventSink = eventSink,
+                ),
+                onSignIn = callback,
+            )
+            rule.clickOn(R.string.screen_onboarding_pressgram_signin_password)
+        }
+    }
+
+    @Test
+    fun `clicking on sign in with QR code calls the expected callback`() {
+        val eventSink = EventsRecorder<OnBoardingEvents>(expectEvents = false)
+        ensureCalledOnce { callback ->
+            rule.setOnboardingView(
+                state = anOnBoardingState(eventSink = eventSink),
+                onSignInWithQrCode = callback,
+            )
+            rule.clickOn(R.string.screen_onboarding_pressgram_signin_qr)
+        }
+    }
+
+    @Test
+    fun `clicking on register calls the create account callback`() {
         val eventSink = EventsRecorder<OnBoardingEvents>(expectEvents = false)
         ensureCalledOnce { callback ->
             rule.setOnboardingView(
                 state = anOnBoardingState(
-                    canCreateAccount = true,
+                    requiresInviteCode = false,
                     eventSink = eventSink,
                 ),
                 onCreateAccount = callback,
             )
-            rule.clickOn(R.string.screen_onboarding_sign_up)
+            rule.clickOn(R.string.screen_onboarding_pressgram_register_open)
         }
     }
+
+    @Test
+    fun `clicking on register with invite code calls the create account callback`() {
+        val eventSink = EventsRecorder<OnBoardingEvents>(expectEvents = false)
+        ensureCalledOnce { callback ->
+            rule.setOnboardingView(
+                state = anOnBoardingState(
+                    requiresInviteCode = true,
+                    eventSink = eventSink,
+                ),
+                onCreateAccount = callback,
+            )
+            rule.clickOn(R.string.screen_onboarding_pressgram_register_with_token)
+        }
+    }
+
+    @Test
+    fun `clicking on change server calls the expected callback`() {
+        val eventSink = EventsRecorder<OnBoardingEvents>(expectEvents = false)
+        ensureCalledOnce { callback ->
+            rule.setOnboardingView(
+                state = anOnBoardingState(eventSink = eventSink),
+                onChangeServer = callback,
+            )
+            rule.clickOn(R.string.screen_onboarding_pressgram_change_server_inline)
+        }
+    }
+
+    @Test
+    fun `the report a problem button is not shown on the welcome screen`() {
+        val eventSink = EventsRecorder<OnBoardingEvents>(expectEvents = false)
+        rule.setOnboardingView(
+            state = anOnBoardingState(
+                canReportBug = true,
+                eventSink = eventSink,
+            ),
+        )
+        val text = rule.activity.getString(CommonStrings.common_report_a_problem)
+        rule.onNodeWithText(text).assertDoesNotExist()
+    }
+
+    // endregion
+
+    // region Add-other-account screen (AddOtherAccountScaffold + OnBoardingButtons)
 
     @Test
     fun `when can go back - clicking on back calls the expected callback`() {
@@ -68,88 +152,11 @@ class OnboardingViewTest {
     }
 
     @Test
-    fun `when can login with QR code - clicking on sign in with QR code calls the expected callback`() {
-        val eventSink = EventsRecorder<OnBoardingEvents>(expectEvents = false)
-        ensureCalledOnce { callback ->
-            rule.setOnboardingView(
-                state = anOnBoardingState(
-                    canLoginWithQrCode = true,
-                    eventSink = eventSink,
-                ),
-                onSignInWithQrCode = callback,
-            )
-            rule.clickOn(R.string.screen_onboarding_sign_in_with_qr_code)
-        }
-    }
-
-    @Test
-    fun `when can login with QR code - clicking on sign in manually calls the expected callback - can search account provider`() {
-        `when can login with QR code - clicking on sign in manually calls the expected callback`(
-            mustChooseAccountProvider = false,
-        )
-    }
-
-    @Test
-    fun `when can login with QR code - clicking on sign in manually calls the expected callback - cannot search account provider`() {
-        `when can login with QR code - clicking on sign in manually calls the expected callback`(
-            mustChooseAccountProvider = true,
-        )
-    }
-
-    private fun `when can login with QR code - clicking on sign in manually calls the expected callback`(
-        mustChooseAccountProvider: Boolean,
-    ) {
-        val eventSink = EventsRecorder<OnBoardingEvents>(expectEvents = false)
-        ensureCalledOnceWithParam(mustChooseAccountProvider) { callback ->
-            rule.setOnboardingView(
-                state = anOnBoardingState(
-                    canLoginWithQrCode = true,
-                    mustChooseAccountProvider = mustChooseAccountProvider,
-                    eventSink = eventSink,
-                ),
-                onSignIn = callback,
-            )
-            rule.clickOn(R.string.screen_onboarding_sign_in_manually)
-        }
-    }
-
-    @Test
-    fun `when cannot login with QR code or create account - clicking on continue calls the sign in callback - can search account provider`() {
-        `when cannot login with QR code or create account - clicking on continue calls the sign in callback`(
-            mustChooseAccountProvider = false,
-        )
-    }
-
-    @Test
-    fun `when cannot login with QR code or create account - clicking on continue calls the sign in callback - cannot search account provider`() {
-        `when cannot login with QR code or create account - clicking on continue calls the sign in callback`(
-            mustChooseAccountProvider = true,
-        )
-    }
-
-    private fun `when cannot login with QR code or create account - clicking on continue calls the sign in callback`(
-        mustChooseAccountProvider: Boolean,
-    ) {
-        val eventSink = EventsRecorder<OnBoardingEvents>(expectEvents = false)
-        ensureCalledOnceWithParam(mustChooseAccountProvider) { callback ->
-            rule.setOnboardingView(
-                state = anOnBoardingState(
-                    canLoginWithQrCode = false,
-                    canCreateAccount = false,
-                    mustChooseAccountProvider = mustChooseAccountProvider,
-                    eventSink = eventSink,
-                ),
-                onSignIn = callback,
-            )
-            rule.clickOn(CommonStrings.action_continue)
-        }
-    }
-
-    @Test
     fun `when sign in to pre defined account provider - clicking on button emits the expected event`() {
         val eventSink = EventsRecorder<OnBoardingEvents>()
         rule.setOnboardingView(
             state = anOnBoardingState(
+                isAddingAccount = true,
                 defaultAccountProvider = "element.io",
                 eventSink = eventSink,
             ),
@@ -158,6 +165,10 @@ class OnboardingViewTest {
         rule.onNodeWithText(buttonText).performClick()
         eventSink.assertSingle(OnBoardingEvents.OnSignIn("element.io"))
     }
+
+    // endregion
+
+    // region Login mode handling (independent of the button set)
 
     @Test
     fun `when error is displayed - closing the dialog emits the expected event`() {
@@ -171,36 +182,6 @@ class OnboardingViewTest {
         )
         rule.clickOn(CommonStrings.action_ok)
         eventSink.assertSingle(OnBoardingEvents.ClearError)
-    }
-
-    @Test
-    fun `clicking on report a problem calls the sign in callback`() {
-        val eventSink = EventsRecorder<OnBoardingEvents>(expectEvents = false)
-        ensureCalledOnce { callback ->
-            rule.setOnboardingView(
-                state = anOnBoardingState(
-                    canReportBug = true,
-                    eventSink = eventSink,
-                ),
-                onReportProblem = callback,
-            )
-            val text = rule.activity.getString(CommonStrings.common_report_a_problem)
-            rule.onNodeWithText(text).assertExists()
-            rule.clickOn(CommonStrings.common_report_a_problem)
-        }
-    }
-
-    @Test
-    fun `cannot report a problem when the feature is disabled`() {
-        val eventSink = EventsRecorder<OnBoardingEvents>(expectEvents = false)
-        rule.setOnboardingView(
-            state = anOnBoardingState(
-                canReportBug = false,
-                eventSink = eventSink,
-            ),
-        )
-        val text = rule.activity.getString(CommonStrings.common_report_a_problem)
-        rule.onNodeWithText(text).assertDoesNotExist()
     }
 
     @Test
@@ -250,6 +231,8 @@ class OnboardingViewTest {
         eventSink.assertSingle(OnBoardingEvents.ClearError)
     }
 
+    // endregion
+
     private fun <R : TestRule> AndroidComposeTestRule<R, ComponentActivity>.setOnboardingView(
         state: OnBoardingState,
         onBackClick: () -> Unit = EnsureNeverCalled(),
@@ -261,6 +244,7 @@ class OnboardingViewTest {
         onNeedLoginPassword: () -> Unit = EnsureNeverCalled(),
         onLearnMoreClick: () -> Unit = EnsureNeverCalled(),
         onCreateAccountContinue: (url: String) -> Unit = EnsureNeverCalledWithParam(),
+        onChangeServer: () -> Unit = EnsureNeverCalled(),
     ) {
         setContent {
             OnBoardingView(
@@ -274,6 +258,7 @@ class OnboardingViewTest {
                 onNeedLoginPassword = onNeedLoginPassword,
                 onLearnMoreClick = onLearnMoreClick,
                 onCreateAccountContinue = onCreateAccountContinue,
+                onChangeServer = onChangeServer,
             )
         }
     }

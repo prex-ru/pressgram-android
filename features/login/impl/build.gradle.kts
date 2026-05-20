@@ -75,6 +75,8 @@ dependencies {
     implementation(libs.androidx.browser)
     implementation(libs.androidx.webkit)
     implementation(libs.serialization.json)
+    implementation(libs.coil)
+    implementation(libs.coil.compose)
     api(projects.features.login.api)
 
     testCommonDependencies(libs, true)

@@ -21,6 +21,8 @@ import io.element.android.features.login.impl.web.FakeWebClientUrlForAuthenticat
 import io.element.android.features.login.impl.web.WebClientUrlForAuthenticationRetriever
 import io.element.android.features.wellknown.test.FakeWellknownRetriever
 import io.element.android.libraries.architecture.AsyncData
+import io.element.android.libraries.communityregistry.api.CommunityRegistryService
+import io.element.android.libraries.communityregistry.test.FakeCommunityRegistryService
 import io.element.android.libraries.core.meta.BuildMeta
 import io.element.android.libraries.matrix.api.auth.MatrixAuthenticationService
 import io.element.android.libraries.matrix.test.AN_ACCOUNT_PROVIDER
@@ -274,6 +276,7 @@ private fun createPresenter(
     onBoardingLogoResIdProvider: OnBoardingLogoResIdProvider = OnBoardingLogoResIdProvider { null },
     sessionStore: SessionStore = InMemorySessionStore(),
     accountProviderDataSource: AccountProviderDataSource = AccountProviderDataSource(FakeEnterpriseService()),
+    communityRegistryService: CommunityRegistryService = FakeCommunityRegistryService(),
 ) = OnBoardingPresenter(
     params = params,
     buildMeta = buildMeta,
@@ -288,6 +291,7 @@ private fun createPresenter(
     sessionStore = sessionStore,
     accountProviderDataSource = accountProviderDataSource,
     loginWithClassicPresenter = { aLoginWithClassicState() },
+    communityRegistryService = communityRegistryService,
 )
 
 fun createLoginHelper(

@@ -29,10 +29,15 @@ import io.element.android.features.login.impl.login.LoginHelper
 import io.element.android.features.login.impl.screens.onboarding.classic.LoginWithClassicState
 import io.element.android.features.rageshake.api.RageshakeFeatureAvailability
 import io.element.android.libraries.architecture.Presenter
+import io.element.android.libraries.communityregistry.api.CommunityRegistryService
+import io.element.android.libraries.communityregistry.api.CommunityServer
+import io.element.android.libraries.communityregistry.api.Registration
 import io.element.android.libraries.core.meta.BuildMeta
+import io.element.android.libraries.core.uri.ensureProtocol
 import io.element.android.libraries.sessionstorage.api.SessionStore
 import io.element.android.libraries.ui.utils.MultipleTapToUnlock
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AssistedInject
 class OnBoardingPresenter(
@@ -46,6 +51,7 @@ class OnBoardingPresenter(
     private val sessionStore: SessionStore,
     private val accountProviderDataSource: AccountProviderDataSource,
     private val loginWithClassicPresenter: Presenter<LoginWithClassicState>,
+    private val communityRegistryService: CommunityRegistryService,
 ) : Presenter<OnBoardingState> {
     @AssistedFactory
     interface Factory {
@@ -85,6 +91,23 @@ class OnBoardingPresenter(
             // If there is a forced account provider, this is the default account provider
             // Else use the account provider passed in the params if any and if allowed
             forcedAccountProvider ?: linkAccountProvider
+        }
+
+        val selectedAccountProvider by accountProviderDataSource.flow.collectAsState()
+        val targetHomeserverUrl = remember(selectedAccountProvider, defaultAccountProvider) {
+            selectedAccountProvider.url.takeIf { it.isNotBlank() }
+                ?: defaultAccountProvider
+                ?: enterpriseService.defaultHomeserverList().firstOrNull()
+        }
+        val defaultCommunityServer by produceState<CommunityServer?>(initialValue = null, targetHomeserverUrl) {
+            val url = targetHomeserverUrl ?: run {
+                value = null
+                return@produceState
+            }
+            value = runCatching { communityRegistryService.getCommunityServers() }
+                .onFailure { Timber.w(it, "OnBoarding: getCommunityServers failed") }
+                .getOrNull()
+                ?.firstOrNull { it.homeserver.ensureProtocol() == url }
         }
         val canLoginWithQrCode by produceState(initialValue = false, linkAccountProvider) {
             value = linkAccountProvider == null
@@ -137,6 +160,12 @@ class OnBoardingPresenter(
             version = buildMeta.versionName,
             onBoardingLogoResId = onBoardingLogoResId,
             loginWithClassicState = loginWithClassicState,
+            selectedServerName = defaultCommunityServer?.name,
+            selectedServerFqdn = defaultCommunityServer?.homeserver
+                ?: targetHomeserverUrl?.removePrefix("https://")?.removePrefix("http://"),
+            selectedServerDescription = defaultCommunityServer?.description,
+            selectedServerLogoUrl = defaultCommunityServer?.logoUrl,
+            requiresInviteCode = defaultCommunityServer?.registration is Registration.Token,
             eventSink = ::handleEvent,
         )
     }

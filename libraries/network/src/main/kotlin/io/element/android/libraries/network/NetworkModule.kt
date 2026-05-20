@@ -13,11 +13,14 @@ import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
+import io.element.android.libraries.di.CacheDirectory
 import io.element.android.libraries.network.interceptors.DynamicHttpLoggingInterceptor
 import io.element.android.libraries.network.interceptors.FormattedJsonHttpLogger
 import io.element.android.libraries.network.interceptors.UserAgentInterceptor
+import okhttp3.Cache
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 @BindingContainer
@@ -28,12 +31,14 @@ object NetworkModule {
     fun providesOkHttpClient(
         userAgentInterceptor: UserAgentInterceptor,
         dynamicHttpLoggingInterceptor: DynamicHttpLoggingInterceptor,
+        @CacheDirectory cacheDirectory: File,
     ): OkHttpClient = OkHttpClient.Builder().apply {
         connectTimeout(30, TimeUnit.SECONDS)
         readTimeout(60, TimeUnit.SECONDS)
         writeTimeout(60, TimeUnit.SECONDS)
         addInterceptor(userAgentInterceptor)
         addInterceptor(dynamicHttpLoggingInterceptor)
+        cache(Cache(File(cacheDirectory, "http_cache"), HTTP_CACHE_SIZE_BYTES))
     }.build()
 
     @Provides
@@ -42,4 +47,6 @@ object NetworkModule {
         val logger = FormattedJsonHttpLogger(HttpLoggingInterceptor.Level.BODY)
         return HttpLoggingInterceptor(logger)
     }
+
+    private const val HTTP_CACHE_SIZE_BYTES = 10L * 1024 * 1024
 }

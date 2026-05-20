@@ -14,29 +14,41 @@ import io.element.android.features.login.impl.login.LoginMode
 import io.element.android.features.login.impl.screens.onboarding.classic.LoginWithClassicState
 import io.element.android.features.login.impl.screens.onboarding.classic.aLoginWithClassicState
 import io.element.android.libraries.architecture.AsyncData
-import io.element.android.libraries.designsystem.R
 
 open class OnBoardingStateProvider : PreviewParameterProvider<OnBoardingState> {
     override val values: Sequence<OnBoardingState>
         get() = sequenceOf(
-            anOnBoardingState(),
-            anOnBoardingState(canLoginWithQrCode = true),
-            anOnBoardingState(canCreateAccount = true),
-            anOnBoardingState(canLoginWithQrCode = true, canCreateAccount = true),
-            anOnBoardingState(canLoginWithQrCode = true, canCreateAccount = true, canReportBug = true),
-            anOnBoardingState(defaultAccountProvider = "element.io", canCreateAccount = false, canReportBug = true),
-            anOnBoardingState(customLogoResId = R.drawable.sample_background),
+//            anOnBoardingState(canLoginWithQrCode = true),
+//            anOnBoardingState(canCreateAccount = true),
+//            anOnBoardingState(canLoginWithQrCode = true, canCreateAccount = true),
+//            anOnBoardingState(canLoginWithQrCode = true, canCreateAccount = true, canReportBug = true),
+//            anOnBoardingState(defaultAccountProvider = "element.io", canCreateAccount = false, canReportBug = true),
+//            anOnBoardingState(customLogoResId = R.drawable.sample_background),
+//            anOnBoardingState(
+//                isAddingAccount = true,
+//                canLoginWithQrCode = true,
+//                canCreateAccount = true,
+//            ),
+            // Pressgram welcome — Open registration variant.
             anOnBoardingState(
-                isAddingAccount = true,
-                canLoginWithQrCode = true,
-                canCreateAccount = true,
+                selectedServerName = "Pressgram",
+                selectedServerFqdn = "pgram.im",
+                selectedServerDescription = "Главный сервер сети. Открытая регистрация для всех журналистов и медиапрофессионалов.",
+                requiresInviteCode = false,
+            ),
+            // Pressgram welcome — Token (invitation-only) variant.
+            anOnBoardingState(
+                selectedServerName = "Редакция «Новости»",
+                selectedServerFqdn = "newsroom.pgram.im",
+                selectedServerDescription = "Внутренний сервер редакции газеты «Новости». Журналисты, редакторы, корреспонденты.",
+                requiresInviteCode = true,
             ),
         )
 }
 
 fun anOnBoardingState(
     isAddingAccount: Boolean = false,
-    productionApplicationName: String = "Element",
+    productionApplicationName: String = "Pressgram",
     defaultAccountProvider: String? = null,
     mustChooseAccountProvider: Boolean = false,
     canLoginWithQrCode: Boolean = false,
@@ -47,6 +59,11 @@ fun anOnBoardingState(
     customLogoResId: Int? = null,
     loginMode: AsyncData<LoginMode> = AsyncData.Uninitialized,
     loginWithClassicState: LoginWithClassicState = aLoginWithClassicState(),
+    selectedServerName: String? = null,
+    selectedServerFqdn: String? = null,
+    selectedServerDescription: String? = null,
+    selectedServerLogoUrl: String? = null,
+    requiresInviteCode: Boolean = false,
     eventSink: (OnBoardingEvents) -> Unit = {},
 ) = OnBoardingState(
     isAddingAccount = isAddingAccount,
@@ -60,5 +77,10 @@ fun anOnBoardingState(
     loginMode = loginMode,
     onBoardingLogoResId = customLogoResId,
     loginWithClassicState = loginWithClassicState,
+    selectedServerName = selectedServerName,
+    selectedServerFqdn = selectedServerFqdn,
+    selectedServerDescription = selectedServerDescription,
+    selectedServerLogoUrl = selectedServerLogoUrl,
+    requiresInviteCode = requiresInviteCode,
     eventSink = eventSink,
 )

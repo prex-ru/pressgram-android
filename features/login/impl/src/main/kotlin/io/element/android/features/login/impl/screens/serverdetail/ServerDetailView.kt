@@ -39,7 +39,6 @@ import io.element.android.features.login.impl.R
 import io.element.android.features.login.impl.login.LoginModeView
 import io.element.android.libraries.architecture.AsyncData
 import io.element.android.libraries.communityregistry.api.Registration
-import io.element.android.libraries.designsystem.R as DesignSystemR
 import io.element.android.libraries.designsystem.atomic.molecules.ButtonColumnMolecule
 import io.element.android.libraries.designsystem.atomic.pages.HeaderFooterPage
 import io.element.android.libraries.designsystem.components.button.BackButton
@@ -52,6 +51,7 @@ import io.element.android.libraries.designsystem.theme.components.TextButton
 import io.element.android.libraries.designsystem.theme.components.TopAppBar
 import io.element.android.libraries.matrix.api.auth.OidcDetails
 import kotlinx.coroutines.launch
+import io.element.android.libraries.designsystem.R as DesignSystemR
 
 @Composable
 fun ServerDetailView(

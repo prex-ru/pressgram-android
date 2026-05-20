@@ -25,4 +25,18 @@
     <string name="screen_server_detail_pressgram_tagline">Decentralized messenger for the media community</string>
     <string name="screen_server_detail_server_label_format">Server: %1$s</string>
     <string name="screen_server_detail_change_server">Change server</string>
+
+    <!-- OnBoarding — Pressgram welcome with selected server (design-only, no wiring) -->
+    <string name="screen_onboarding_pressgram_server_label">Server:</string>
+    <string name="screen_onboarding_pressgram_server_value_format">%1$s (%2$s)</string>
+    <string name="screen_onboarding_pressgram_change_server_inline">Change ></string>
+    <string name="screen_onboarding_pressgram_signin_password">Sign in with password</string>
+    <string name="screen_onboarding_pressgram_signin_qr">Sign in with QR code</string>
+    <string name="screen_onboarding_pressgram_register_open">Register</string>
+    <string name="screen_onboarding_pressgram_register_with_token">Register (I have a code)</string>
+    <string name="screen_onboarding_pressgram_request_invite">Request invitation</string>
+
+    <!-- Server catalog (Pressgram Community Registry, scenario B) -->
+    <string name="screen_server_catalog_title">Choose a server</string>
+    <string name="screen_server_catalog_error">Failed to load the server list.</string>
 </resources>

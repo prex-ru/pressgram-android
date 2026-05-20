@@ -63,7 +63,7 @@ fun OnBoardingPage(
             modifier = Modifier
                 .fillMaxSize()
                 .systemBarsPadding()
-                .padding(all = 20.dp),
+                .padding(all = 24.dp),
         ) {
             // Content
             Column(
@@ -75,7 +75,7 @@ fun OnBoardingPage(
                 content()
             }
             // Footer
-            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Box {
                 footer()
             }
         }

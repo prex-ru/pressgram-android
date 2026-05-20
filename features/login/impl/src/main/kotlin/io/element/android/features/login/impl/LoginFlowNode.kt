@@ -38,6 +38,7 @@ import io.element.android.features.login.impl.screens.createaccount.CreateAccoun
 import io.element.android.features.login.impl.screens.loginpassword.LoginPasswordNode
 import io.element.android.features.login.impl.screens.onboarding.OnBoardingNode
 import io.element.android.features.login.impl.screens.searchaccountprovider.SearchAccountProviderNode
+import io.element.android.features.login.impl.screens.servercatalog.ServerCatalogNode
 import io.element.android.features.login.impl.screens.serverdetail.ServerDetailNode
 import io.element.android.libraries.androidutils.browser.openUrlInChromeCustomTab
 import io.element.android.libraries.architecture.BackstackView
@@ -46,6 +47,7 @@ import io.element.android.libraries.architecture.NodeInputs
 import io.element.android.libraries.architecture.callback
 import io.element.android.libraries.architecture.createNode
 import io.element.android.libraries.architecture.inputs
+import io.element.android.libraries.core.uri.ensureProtocol
 import io.element.android.libraries.di.annotations.AppCoroutineScope
 import io.element.android.libraries.matrix.api.auth.OidcDetails
 import io.element.android.libraries.oidc.api.OidcAction
@@ -131,6 +133,9 @@ class LoginFlowNode(
 
         @Parcelize
         data class ServerDetail(val homeserverUrl: String) : NavTarget
+
+        @Parcelize
+        data object ServerCatalog : NavTarget
     }
 
     override fun resolve(navTarget: NavTarget, buildContext: BuildContext): Node {
@@ -176,6 +181,10 @@ class LoginFlowNode(
                     override fun onDone() {
                         callback.onDone()
                     }
+
+                    override fun navigateToChangeServer() {
+                        backstack.push(NavTarget.ServerCatalog)
+                    }
                 }
                 val params = inputs<Params>()
                 val inputs = OnBoardingNode.Params(
@@ -207,13 +216,24 @@ class LoginFlowNode(
                         backstack.push(NavTarget.LoginPassword)
                     }
 
-                    // Step 3 (spec §5.3) replaces this with backstack.singleTop(NavTarget.ServerCatalog).
-                    // For now we pop back to the upstream account-provider picker so the link still works.
-                    override fun navigateToChangeServer() {
-                        backstack.pop()
+                        override fun navigateToChangeServer() {
+                        backstack.singleTop(NavTarget.ServerCatalog)
                     }
                 }
                 createNode<ServerDetailNode>(buildContext, plugins = listOf(inputs, callback))
+            }
+            NavTarget.ServerCatalog -> {
+                val callback = object : ServerCatalogNode.Callback {
+                    override fun onServerSelected(homeserverUrl: String) {
+                        // Persist the picked server so the Welcome screen (and the
+                        // rest of the login flow) reflects it, then return to Welcome.
+                        appCoroutineScope.launch {
+                            accountProviderDataSource.setUrl(homeserverUrl.ensureProtocol())
+                        }
+                        backstack.pop()
+                    }
+                }
+                createNode<ServerCatalogNode>(buildContext, listOf(callback))
             }
             NavTarget.QrCode -> {
                 val callback = object : QrCodeLoginFlowNode.Callback {

@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import io.element.android.libraries.designsystem.preview.ElementPreview
 import io.element.android.libraries.designsystem.preview.PreviewsDayNight
 import io.element.android.libraries.designsystem.theme.components.Button
+import io.element.android.libraries.designsystem.theme.components.ButtonSize
 import io.element.android.libraries.designsystem.theme.components.OutlinedButton
 import io.element.android.libraries.designsystem.theme.components.TextButton
 
@@ -43,6 +44,7 @@ internal fun ButtonColumnMoleculePreview() = ElementPreview {
     ButtonColumnMolecule {
         Button(text = "Button", onClick = {}, modifier = Modifier.fillMaxWidth())
         OutlinedButton(text = "OutlinedButton", onClick = {}, modifier = Modifier.fillMaxWidth())
-        TextButton(text = "TextButton", onClick = {}, modifier = Modifier.fillMaxWidth())
+        TextButton(text = "TextButton", size = ButtonSize.Small, onClick = {}, modifier = Modifier.fillMaxWidth())
+        TextButton(text = "TextButton2", size = ButtonSize.Small, onClick = {}, modifier = Modifier.fillMaxWidth())
     }
 }

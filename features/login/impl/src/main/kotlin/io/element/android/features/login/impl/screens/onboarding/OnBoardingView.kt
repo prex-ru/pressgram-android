@@ -8,33 +8,36 @@
 
 package io.element.android.features.login.impl.screens.onboarding
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
-import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import coil3.compose.AsyncImage
 import io.element.android.compound.theme.ElementTheme
 import io.element.android.compound.tokens.generated.CompoundIcons
 import io.element.android.features.login.impl.R
@@ -43,8 +46,6 @@ import io.element.android.features.login.impl.screens.onboarding.classic.Confirm
 import io.element.android.features.login.impl.screens.onboarding.classic.LoginWithClassicEvent
 import io.element.android.features.login.impl.screens.onboarding.classic.LoginWithClassicState
 import io.element.android.libraries.architecture.AsyncData
-import io.element.android.libraries.designsystem.atomic.atoms.ElementLogoAtom
-import io.element.android.libraries.designsystem.atomic.atoms.ElementLogoAtomSize
 import io.element.android.libraries.designsystem.atomic.molecules.ButtonColumnMolecule
 import io.element.android.libraries.designsystem.atomic.pages.FlowStepPage
 import io.element.android.libraries.designsystem.atomic.pages.OnBoardingPage
@@ -55,12 +56,14 @@ import io.element.android.libraries.designsystem.preview.ElementPreview
 import io.element.android.libraries.designsystem.preview.PreviewsDayNight
 import io.element.android.libraries.designsystem.theme.components.Button
 import io.element.android.libraries.designsystem.theme.components.IconSource
+import io.element.android.libraries.designsystem.theme.components.OutlinedButton
 import io.element.android.libraries.designsystem.theme.components.Text
 import io.element.android.libraries.designsystem.theme.components.TextButton
 import io.element.android.libraries.matrix.api.auth.OidcDetails
 import io.element.android.libraries.testtags.TestTags
 import io.element.android.libraries.testtags.testTag
 import io.element.android.libraries.ui.strings.CommonStrings
+import io.element.android.libraries.designsystem.R as DesignSystemR
 
 // Refs:
 // FTUE:
@@ -79,6 +82,7 @@ fun OnBoardingView(
     onLearnMoreClick: () -> Unit,
     onCreateAccountContinue: (url: String) -> Unit,
     onReportProblem: () -> Unit,
+    onChangeServer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val loginView = @Composable {
@@ -102,6 +106,15 @@ fun OnBoardingView(
             onReportProblem = onReportProblem,
         )
     }
+    val pressgramButtons = @Composable {
+        PressgramOnboardingButtons(
+            state = state,
+            onSignInWithPassword = { onSignIn(state.mustChooseAccountProvider) },
+            onSignInWithQrCode = onSignInWithQrCode,
+            onRegister = onCreateAccount,
+            onRequestInvite = { /* TODO: wire after Nikita spec finalises invite-request entry-point */ },
+        )
+    }
 
     if (state.isAddingAccount) {
         AddOtherAccountScaffold(
@@ -115,7 +128,8 @@ fun OnBoardingView(
             modifier = modifier,
             state = state,
             loginView = loginView,
-            buttons = buttons,
+            buttons = pressgramButtons,
+            onChangeServer = onChangeServer,
         )
     }
 
@@ -162,19 +176,17 @@ private fun AddFirstAccountScaffold(
     state: OnBoardingState,
     loginView: @Composable () -> Unit,
     buttons: @Composable () -> Unit,
+    onChangeServer: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     OnBoardingPage(
         modifier = modifier,
         renderBackground = state.onBoardingLogoResId == null,
         content = {
-            if (state.onBoardingLogoResId != null) {
-                OnBoardingLogo(
-                    onBoardingLogoResId = state.onBoardingLogoResId,
-                )
-            } else {
-                OnBoardingContent(state = state)
-            }
+            OnBoardingContent(
+                state = state,
+                onChangeServer = onChangeServer,
+            )
             loginView()
         },
         footer = {
@@ -201,58 +213,84 @@ private fun AddOtherAccountScaffold(
 }
 
 @Composable
-private fun OnBoardingContent(state: OnBoardingState) {
+private fun OnBoardingContent(
+    state: OnBoardingState,
+    onChangeServer: () -> Unit,
+) {
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
-        Column (
-            modifier = Modifier.fillMaxSize().padding(bottom = 40.dp),
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 40.dp),
             horizontalAlignment = CenterHorizontally,
             verticalArrangement = Arrangement.Bottom
-
         ) {
-            ElementLogoAtom(
-                size = ElementLogoAtomSize.Large,
-                modifier = Modifier.padding(bottom = 24.dp)
+            val fallbackLogo = painterResource(id = DesignSystemR.drawable.pressgram_logo)
+            AsyncImage(
+                model = state.selectedServerLogoUrl,
+                contentDescription = null,
+                placeholder = fallbackLogo,
+                error = fallbackLogo,
+                fallback = fallbackLogo,
+                modifier = Modifier.size(88.dp),
             )
+            Spacer(Modifier.height(24.dp))
             Column(
                 modifier = Modifier
                     .fillMaxWidth(),
                 horizontalAlignment = CenterHorizontally,
             ) {
                 Text(
-                    text = stringResource(id = R.string.screen_onboarding_welcome_title),
-                    color = ElementTheme.colors.textPrimary,
+                    text = state.selectedServerName
+                        ?: stringResource(id = R.string.screen_server_detail_brand_name),
                     style = ElementTheme.typography.fontHeadingLgBold,
-                    textAlign = TextAlign.Center
+                    color = ElementTheme.colors.textPrimary,
+                    textAlign = TextAlign.Center,
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(Modifier.height(4.dp))
                 Text(
-                    text = stringResource(id = R.string.screen_onboarding_welcome_message, state.productionApplicationName),
+                    text = state.selectedServerDescription
+                        ?: stringResource(id = R.string.screen_server_detail_pressgram_tagline),
+                    modifier = Modifier.padding(horizontal = 20.dp),
                     color = ElementTheme.colors.textSecondary,
-                    style = ElementTheme.typography.fontBodyLgRegular.copy(fontSize = 17.sp),
-                    textAlign = TextAlign.Center
+                    style = ElementTheme.typography.fontBodyMdRegular,
+                    textAlign = TextAlign.Center,
                 )
+                Spacer(Modifier.height(12.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.screen_onboarding_pressgram_server_label),
+                        style = ElementTheme.typography.fontBodySmMedium,
+                        color = ElementTheme.colors.textSecondary,
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        modifier = Modifier.widthIn(max = 200.dp),
+                        text = stringResource(
+                            id = R.string.screen_onboarding_pressgram_server_value_format,
+                            state.selectedServerName.orEmpty(),
+                            state.selectedServerFqdn.orEmpty(),
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = ElementTheme.typography.fontBodySmMedium,
+                        color = ElementTheme.colors.textPrimary,
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        modifier = Modifier.clickable(onClick = onChangeServer),
+                        text = stringResource(id = R.string.screen_onboarding_pressgram_change_server_inline),
+                        style = ElementTheme.typography.fontBodySmMedium,
+                        color = ElementTheme.colors.textPrimary,
+                    )
+                }
             }
         }
-    }
-}
-
-@Composable
-private fun OnBoardingLogo(
-    onBoardingLogoResId: Int,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(
-            painter = painterResource(id = onBoardingLogoResId),
-            contentDescription = null
-        )
     }
 }
 
@@ -354,6 +392,66 @@ private fun OnBoardingButtons(
     }
 }
 
+@Composable
+private fun PressgramOnboardingButtons(
+    state: OnBoardingState,
+    onSignInWithPassword: () -> Unit,
+    onSignInWithQrCode: () -> Unit,
+    onRegister: () -> Unit,
+    onRequestInvite: () -> Unit,
+) {
+    ButtonColumnMolecule {
+        Button(
+            text = stringResource(id = R.string.screen_onboarding_pressgram_signin_password),
+            onClick = onSignInWithPassword,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        OutlinedButton(
+            text = stringResource(id = R.string.screen_onboarding_pressgram_signin_qr),
+            onClick = onSignInWithQrCode,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+            horizontalAlignment = CenterHorizontally,
+        ) {
+            val registerTextRes = if (state.requiresInviteCode) {
+                R.string.screen_onboarding_pressgram_register_with_token
+            } else {
+                R.string.screen_onboarding_pressgram_register_open
+            }
+            PressgramTextLink(
+                text = stringResource(id = registerTextRes),
+                onClick = onRegister,
+            )
+            if (state.requiresInviteCode) {
+                PressgramTextLink(
+                    text = stringResource(id = R.string.screen_onboarding_pressgram_request_invite),
+                    onClick = onRequestInvite,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PressgramTextLink(
+    text: String,
+    onClick: () -> Unit,
+) {
+    Text(
+        modifier = Modifier
+            .clickable(onClick = onClick)
+            .padding(vertical = 4.dp, horizontal = 16.dp),
+        text = text,
+        style = ElementTheme.typography.fontBodyMdMedium,
+        color = ElementTheme.colors.textPrimary,
+        textDecoration = TextDecoration.Underline,
+        textAlign = TextAlign.Center,
+    )
+}
+
 @PreviewsDayNight
 @Composable
 internal fun OnBoardingViewPreview(
@@ -370,5 +468,6 @@ internal fun OnBoardingViewPreview(
         onNeedLoginPassword = {},
         onLearnMoreClick = {},
         onCreateAccountContinue = {},
+        onChangeServer = {},
     )
 }

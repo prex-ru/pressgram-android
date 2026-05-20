@@ -26,6 +26,11 @@ data class OnBoardingState(
     val onBoardingLogoResId: Int?,
     val loginMode: AsyncData<LoginMode>,
     val loginWithClassicState: LoginWithClassicState,
+    val selectedServerName: String? = null,
+    val selectedServerFqdn: String? = null,
+    val selectedServerDescription: String? = null,
+    val selectedServerLogoUrl: String? = null,
+    val requiresInviteCode: Boolean = false,
     val eventSink: (OnBoardingEvents) -> Unit,
 ) {
     val submitEnabled: Boolean
