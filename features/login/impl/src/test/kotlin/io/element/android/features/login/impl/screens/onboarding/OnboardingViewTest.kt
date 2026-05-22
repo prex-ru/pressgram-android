@@ -232,6 +232,7 @@ class OnboardingViewTest {
         onLearnMoreClick: () -> Unit = EnsureNeverCalled(),
         onCreateAccountContinue: (url: String) -> Unit = EnsureNeverCalledWithParam(),
         onChangeServer: () -> Unit = EnsureNeverCalled(),
+        onRequestInvite: (String) -> Unit = EnsureNeverCalledWithParam(),
     ) {
         setContent {
             OnBoardingView(
@@ -246,6 +247,7 @@ class OnboardingViewTest {
                 onLearnMoreClick = onLearnMoreClick,
                 onCreateAccountContinue = onCreateAccountContinue,
                 onChangeServer = onChangeServer,
+                onRequestInvite = onRequestInvite,
             )
         }
     }

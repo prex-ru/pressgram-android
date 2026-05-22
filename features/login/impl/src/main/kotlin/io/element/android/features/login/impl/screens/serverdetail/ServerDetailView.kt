@@ -62,6 +62,7 @@ fun ServerDetailView(
     onLearnMoreClick: () -> Unit,
     onCreateAccountContinue: (url: String) -> Unit,
     onChangeServer: () -> Unit,
+    onRequestInvite: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isLoading by remember(state.loginMode) {
@@ -88,6 +89,7 @@ fun ServerDetailView(
                     onRegister = { state.eventSink(ServerDetailEvents.Register) },
                     onSignIn = { state.eventSink(ServerDetailEvents.SignIn) },
                     onChangeServer = onChangeServer,
+                    onRequestInvite = onRequestInvite,
                     onComingSoon = {
                         scope.launch { snackbarHostState.showSnackbar(comingSoonMessage) }
                     },
@@ -225,6 +227,7 @@ private fun ServerDetailFooter(
     onRegister: () -> Unit,
     onSignIn: () -> Unit,
     onChangeServer: () -> Unit,
+    onRequestInvite: () -> Unit,
     onComingSoon: () -> Unit,
 ) {
     val registration = (serverInfo as? AsyncData.Success)?.data?.registration
@@ -257,7 +260,7 @@ private fun ServerDetailFooter(
                 )
                 TextButton(
                     text = stringResource(id = R.string.screen_server_detail_request_button),
-                    onClick = onComingSoon,
+                    onClick = onRequestInvite,
                     enabled = !isLoading,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -293,5 +296,6 @@ internal fun ServerDetailViewPreview(@PreviewParameter(ServerDetailStateProvider
         onLearnMoreClick = {},
         onCreateAccountContinue = {},
         onChangeServer = {},
+        onRequestInvite = {},
     )
 }

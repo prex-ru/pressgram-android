@@ -19,7 +19,7 @@ class MockCommunityRegistryServiceTest {
     private val service = MockCommunityRegistryService()
 
     @Test
-    fun `getCommunityServers covers Open Token and Closed registration kinds`() = runTest {
+    fun `getCommunityServers covers Token and Closed registration kinds`() = runTest {
         val servers = service.getCommunityServers()
         assertThat(servers).isNotEmpty()
         val kinds = servers.map { server ->
@@ -30,7 +30,7 @@ class MockCommunityRegistryServiceTest {
                 Registration.Unknown -> "unknown"
             }
         }.toSet()
-        assertThat(kinds).containsAtLeast("open", "token", "closed")
+        assertThat(kinds).containsAtLeast("token", "closed")
     }
 
     @Test

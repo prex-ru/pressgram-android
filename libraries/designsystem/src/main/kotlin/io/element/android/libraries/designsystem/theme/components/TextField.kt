@@ -30,6 +30,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -59,6 +60,7 @@ fun TextField(
     placeholder: String? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
+    shape: Shape = RoundedCornerShape(4.dp),
     validity: TextFieldValidity = TextFieldValidity.None,
     enabled: Boolean = true,
     readOnly: Boolean = false,
@@ -95,6 +97,7 @@ fun TextField(
             enabled = enabled,
             isFocused = isFocused,
             validity = validity,
+            shape = shape,
             leadingIcon = leadingIcon,
             placeholder = placeholder,
             isTextEmpty = value.isEmpty(),
@@ -115,6 +118,7 @@ fun TextField(
     placeholder: String? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
+    shape: Shape = RoundedCornerShape(4.dp),
     validity: TextFieldValidity? = null,
     enabled: Boolean = true,
     readOnly: Boolean = false,
@@ -151,6 +155,7 @@ fun TextField(
             enabled = enabled,
             isFocused = isFocused,
             validity = validity,
+            shape = shape,
             leadingIcon = leadingIcon,
             placeholder = placeholder,
             isTextEmpty = value.text.isEmpty(),
@@ -168,6 +173,7 @@ private fun DecorationBox(
     readOnly: Boolean,
     isFocused: Boolean,
     validity: TextFieldValidity?,
+    shape: Shape,
     placeholder: String?,
     isTextEmpty: Boolean,
     supportingText: String?,
@@ -188,7 +194,8 @@ private fun DecorationBox(
             enabled = enabled,
             readOnly = readOnly,
             isFocused = isFocused,
-            isError = validity == TextFieldValidity.Invalid
+            isError = validity == TextFieldValidity.Invalid,
+            shape = shape,
         ) {
             Row(modifier = Modifier.padding(16.dp)) {
                 if (leadingIcon != null) {
@@ -228,10 +235,11 @@ private fun TextFieldContainer(
     readOnly: Boolean,
     isFocused: Boolean,
     isError: Boolean,
+    shape: Shape,
     content: @Composable () -> Unit
 ) {
     Surface(
-        shape = RoundedCornerShape(4.dp),
+        shape = shape,
         border = if (readOnly) {
             null
         } else {

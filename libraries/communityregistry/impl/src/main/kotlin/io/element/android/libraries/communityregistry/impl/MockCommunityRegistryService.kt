@@ -7,8 +7,7 @@
 
 package io.element.android.libraries.communityregistry.impl
 
-import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import io.element.android.libraries.communityregistry.api.CheckInviteResult
 import io.element.android.libraries.communityregistry.api.CommunityRegistryService
 import io.element.android.libraries.communityregistry.api.CommunityServer
@@ -16,23 +15,29 @@ import io.element.android.libraries.communityregistry.api.InviteRequestResult
 import io.element.android.libraries.communityregistry.api.Registration
 import io.element.android.libraries.communityregistry.api.Visibility
 
-// Active binding while dl.pgram.im endpoints are not deployed. Replace with
-// DefaultCommunityRegistryService once the server is live (§10 mocks become
-// the seed data for the real backend).
+// In-memory data source while dl.pgram.im endpoints are not deployed. Replace with
+// DefaultCommunityRegistryService once the server is live (§10 mocks become the seed
+// data for the real backend). It is wrapped by LoggingCommunityRegistryService, which
+// is the actual @ContributesBinding for CommunityRegistryService.
 //
-// Data mirrors §10 of the pressgram-community-registry spec verbatim, including
-// bare hostnames (mapper for the real API also produces bare hostnames).
-@ContributesBinding(AppScope::class)
+// Data mirrors §10 of the pressgram-community-registry spec, with bare hostnames
+// (the mapper for the real API also produces bare hostnames).
+@Inject
 class MockCommunityRegistryService : CommunityRegistryService {
     override suspend fun getCommunityServers(): List<CommunityServer> = listOf(
         CommunityServer(
             homeserver = "pgram.im",
             name = "Pressgram",
-            description = "Главный сервер сети. Открытая регистрация для всех журналистов и медиапрофессионалов.",
+            description = "Главный сервер сети для журналистов и медиапрофессионалов.",
             logoUrl = "https://pgram.im/pressgram-logo-blue.png",
             type = "community",
             visibility = Visibility.Public,
-            registration = Registration.Open,
+            // Local testing: pgram.im uses token registration so the invite-request
+            // flow is reachable straight from the default onboarding screen.
+            registration = Registration.Token(
+                instructions = "Расскажите о себе и вашей работе в медиа — администратор рассмотрит заявку и пришлёт код приглашения.",
+                contact = "gulshan.rahimova.dev@gmail.com",
+            ),
             owner = "PREX",
             country = "RU",
             language = "ru",

@@ -25,6 +25,7 @@ dependencies {
     implementation(platform(libs.network.retrofit.bom))
     implementation(libs.network.retrofit)
     implementation(libs.serialization.json)
+    implementation(libs.timber)
     implementation(projects.libraries.core)
     implementation(projects.libraries.di)
     implementation(projects.libraries.network)

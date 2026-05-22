@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "Bash(./gradlew :features:login:impl:ktlintMainSourceSetCheck -q)",
+      "Bash(./gradlew :features:login:impl:ktlintMainSourceSetCheck)",
+      "Bash(./gradlew :features:login:impl:ktlintFormat -q)",
+      "Bash(./gradlew :features:login:impl:testDebugUnitTest --tests \"*OnboardingViewTest*\" -q)",
+      "Bash(./gradlew :features:login:impl:ktlintCheck -q)",
+      "Bash(./gradlew :features:login:impl:testDebugUnitTest -q)",
+      "Bash(./gradlew :features:login:impl:compileDebugKotlin -q)",
+      "Bash(./gradlew :features:login:impl:compileDebugKotlin)",
+      "Bash(./gradlew :features:login:impl:testDebugUnitTest)",
+      "Bash(grep -E \"^e: |error:|tests? \\(completed|failed\\)|FAILED$\")",
+      "Bash(./gradlew :features:login:impl:testDebugUnitTest :features:login:impl:ktlintCheck)",
+      "Bash(./gradlew :features:login:impl:ktlintFormat :features:login:impl:ktlintCheck :features:login:impl:testDebugUnitTest)",
+      "Bash(./gradlew :features:login:impl:compileDebugUnitTestKotlin)",
+      "Bash(./gradlew :features:login:impl:ktlintCheck :features:login:impl:testDebugUnitTest)",
+      "mcp__plugin_figma_figma__get_screenshot",
+      "mcp__plugin_figma_figma__whoami",
+      "mcp__plugin_figma_figma__get_design_context",
+      "Bash(curl -s -o figma_inviterequest.png \"https://www.figma.com/api/mcp/asset/0e06a71e-a713-473a-9374-88ca98803af3\")",
+      "Bash(./gradlew :features:login:impl:ktlintCheck)",
+      "Bash(sed -n 201,203p features/login/impl/src/main/kotlin/io/element/android/features/login/impl/screens/inviterequest/InviteRequestView.kt)",
+      "Bash(sed -n 253,257p features/login/impl/src/main/kotlin/io/element/android/features/login/impl/screens/inviterequest/InviteRequestView.kt)",
+      "Bash(./gradlew :libraries:designsystem:compileDebugKotlin :features:login:impl:compileDebugKotlin -q)",
+      "Bash(./gradlew :libraries:designsystem:ktlintCheck :features:login:impl:ktlintCheck :features:login:impl:testDebugUnitTest)",
+      "Bash(sed -n 196,199p features/login/impl/src/main/kotlin/io/element/android/features/login/impl/screens/inviterequest/InviteRequestView.kt)",
+      "Bash(sed -n 284,288p features/login/impl/src/main/kotlin/io/element/android/features/login/impl/screens/inviterequest/InviteRequestView.kt)",
+      "Bash(sed -i '' 199,286d features/login/impl/src/main/kotlin/io/element/android/features/login/impl/screens/inviterequest/InviteRequestView.kt)",
+      "Bash(sed -n 195,201p features/login/impl/src/main/kotlin/io/element/android/features/login/impl/screens/inviterequest/InviteRequestView.kt)",
+      "Bash(./gradlew :features:login:impl:ktlintFormat :libraries:designsystem:ktlintFormat -q)",
+      "Bash(./gradlew :libraries:communityregistry:impl:compileDebugKotlin :features:login:impl:compileDebugKotlin -q)",
+      "Bash(./gradlew :libraries:communityregistry:impl:testDebugUnitTest :libraries:communityregistry:impl:ktlintCheck)",
+      "Bash(./gradlew :libraries:communityregistry:impl:ktlintCheck :libraries:communityregistry:impl:testDebugUnitTest)"
+    ]
+  }
+}

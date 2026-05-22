@@ -8,6 +8,7 @@
 
 package io.element.android.features.login.impl.screens.onboarding
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +21,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -28,6 +30,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -55,6 +59,7 @@ import io.element.android.libraries.designsystem.components.dialogs.Confirmation
 import io.element.android.libraries.designsystem.preview.ElementPreview
 import io.element.android.libraries.designsystem.preview.PreviewsDayNight
 import io.element.android.libraries.designsystem.theme.components.Button
+import io.element.android.libraries.designsystem.theme.components.Icon
 import io.element.android.libraries.designsystem.theme.components.IconSource
 import io.element.android.libraries.designsystem.theme.components.OutlinedButton
 import io.element.android.libraries.designsystem.theme.components.Text
@@ -83,6 +88,7 @@ fun OnBoardingView(
     onCreateAccountContinue: (url: String) -> Unit,
     onReportProblem: () -> Unit,
     onChangeServer: () -> Unit,
+    onRequestInvite: (homeserverUrl: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val loginView = @Composable {
@@ -118,7 +124,7 @@ fun OnBoardingView(
             },
             onSignInWithQrCode = onSignInWithQrCode,
             onRegister = onCreateAccount,
-            onRequestInvite = { /* TODO: wire after Nikita spec finalises invite-request entry-point */ },
+            onRequestInvite = { state.selectedHomeserverUrl?.let(onRequestInvite) },
         )
     }
 
@@ -233,14 +239,12 @@ private fun OnBoardingContent(
             horizontalAlignment = CenterHorizontally,
             verticalArrangement = Arrangement.Bottom
         ) {
-            val fallbackLogo = painterResource(id = DesignSystemR.drawable.pressgram_logo)
-            AsyncImage(
-                model = state.selectedServerLogoUrl,
+            val pressgramLogo = painterResource(id = DesignSystemR.drawable.pressgram_logo)
+            // The top logo is always the Pressgram brand logo, never a community logo.
+            Image(
+                painter = pressgramLogo,
                 contentDescription = null,
-                placeholder = fallbackLogo,
-                error = fallbackLogo,
-                fallback = fallbackLogo,
-                modifier = Modifier.size(88.dp),
+                modifier = Modifier.size(96.dp).clip(RoundedCornerShape(22.dp)),
             )
             Spacer(Modifier.height(24.dp))
             Column(
@@ -266,34 +270,67 @@ private fun OnBoardingContent(
                 )
                 Spacer(Modifier.height(12.dp))
                 Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.screen_onboarding_pressgram_server_label),
-                        style = ElementTheme.typography.fontBodySmMedium,
-                        color = ElementTheme.colors.textSecondary,
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Text(
-                        modifier = Modifier.widthIn(max = 200.dp),
-                        text = stringResource(
-                            id = R.string.screen_onboarding_pressgram_server_value_format,
-                            state.selectedServerName.orEmpty(),
-                            state.selectedServerFqdn.orEmpty(),
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        style = ElementTheme.typography.fontBodySmMedium,
-                        color = ElementTheme.colors.textPrimary,
-                    )
+                    Row(
+                        modifier = Modifier.weight(1f, fill = false),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        // The community logo comes from the registry API and is shown
+                        // as a circle; the bundled Pressgram logo is the fallback.
+                        AsyncImage(
+                            model = state.selectedServerLogoUrl,
+                            contentDescription = null,
+                            placeholder = pressgramLogo,
+                            error = pressgramLogo,
+                            fallback = pressgramLogo,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape),
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.screen_onboarding_pressgram_server_label),
+                                style = ElementTheme.typography.fontBodySmMedium,
+                                color = ElementTheme.colors.textSecondary,
+                            )
+                            Text(
+                                text = stringResource(
+                                    id = R.string.screen_onboarding_pressgram_server_value_format,
+                                    state.selectedServerName.orEmpty(),
+                                    state.selectedServerFqdn.orEmpty(),
+                                ),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                style = ElementTheme.typography.fontBodySmMedium,
+                                color = ElementTheme.colors.textPrimary,
+                            )
+                        }
+                    }
                     Spacer(Modifier.width(8.dp))
-                    Text(
+                    Row(
                         modifier = Modifier.clickable(onClick = onChangeServer),
-                        text = stringResource(id = R.string.screen_onboarding_pressgram_change_server_inline),
-                        style = ElementTheme.typography.fontBodySmMedium,
-                        color = ElementTheme.colors.textPrimary,
-                    )
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.screen_onboarding_pressgram_change_server_inline),
+                            style = ElementTheme.typography.fontBodySmMedium,
+                            color = ElementTheme.colors.textPrimary,
+                            textDecoration = TextDecoration.Underline,
+                        )
+                        Icon(
+                            imageVector = CompoundIcons.ChevronRight(),
+                            contentDescription = null,
+                            tint = ElementTheme.colors.textPrimary,
+                            modifier = Modifier.size(16.dp),
+                        )
+                    }
                 }
             }
         }
@@ -480,5 +517,6 @@ internal fun OnBoardingViewPreview(
         onLearnMoreClick = {},
         onCreateAccountContinue = {},
         onChangeServer = {},
+        onRequestInvite = {},
     )
 }

@@ -43,6 +43,7 @@ class OnBoardingNode(
         fun navigateToOidc(oidcDetails: OidcDetails)
         fun navigateToCreateAccount(url: String)
         fun navigateToChangeServer()
+        fun navigateToRequestInvite(homeserverUrl: String)
         fun onDone()
     }
 
@@ -74,6 +75,7 @@ class OnBoardingNode(
             onLearnMoreClick = { openLearnMorePage(context) },
             onCreateAccountContinue = callback::navigateToCreateAccount,
             onChangeServer = callback::navigateToChangeServer,
+            onRequestInvite = callback::navigateToRequestInvite,
             onBackClick = callback::onDone,
         )
     }

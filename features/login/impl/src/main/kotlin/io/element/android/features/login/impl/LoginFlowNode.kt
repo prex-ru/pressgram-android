@@ -36,6 +36,7 @@ import io.element.android.features.login.impl.screens.changeaccountprovider.Chan
 import io.element.android.features.login.impl.screens.chooseaccountprovider.ChooseAccountProviderNode
 import io.element.android.features.login.impl.screens.confirmaccountprovider.ConfirmAccountProviderNode
 import io.element.android.features.login.impl.screens.createaccount.CreateAccountNode
+import io.element.android.features.login.impl.screens.inviterequest.InviteRequestNode
 import io.element.android.features.login.impl.screens.loginpassword.LoginPasswordNode
 import io.element.android.features.login.impl.screens.onboarding.OnBoardingNode
 import io.element.android.features.login.impl.screens.searchaccountprovider.SearchAccountProviderNode
@@ -144,6 +145,9 @@ class LoginFlowNode(
 
         @Parcelize
         data object ServerCatalog : NavTarget
+
+        @Parcelize
+        data class InviteRequest(val homeserverUrl: String) : NavTarget
     }
 
     override fun resolve(navTarget: NavTarget, buildContext: BuildContext): Node {
@@ -193,6 +197,10 @@ class LoginFlowNode(
                     override fun navigateToChangeServer() {
                         backstack.push(NavTarget.ServerCatalog)
                     }
+
+                    override fun navigateToRequestInvite(homeserverUrl: String) {
+                        backstack.push(NavTarget.InviteRequest(homeserverUrl))
+                    }
                 }
                 val params = inputs<Params>()
                 val inputs = OnBoardingNode.Params(
@@ -224,8 +232,12 @@ class LoginFlowNode(
                         backstack.push(NavTarget.LoginPassword)
                     }
 
-                        override fun navigateToChangeServer() {
+                    override fun navigateToChangeServer() {
                         backstack.singleTop(NavTarget.ServerCatalog)
+                    }
+
+                    override fun navigateToRequestInvite() {
+                        backstack.push(NavTarget.InviteRequest(navTarget.homeserverUrl))
                     }
                 }
                 createNode<ServerDetailNode>(buildContext, plugins = listOf(inputs, callback))
@@ -245,6 +257,10 @@ class LoginFlowNode(
                     }
                 }
                 createNode<ServerCatalogNode>(buildContext, listOf(callback))
+            }
+            is NavTarget.InviteRequest -> {
+                val inputs = InviteRequestNode.Inputs(homeserverUrl = navTarget.homeserverUrl)
+                createNode<InviteRequestNode>(buildContext, listOf(inputs))
             }
             NavTarget.QrCode -> {
                 val callback = object : QrCodeLoginFlowNode.Callback {
