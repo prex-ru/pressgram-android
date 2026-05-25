@@ -313,7 +313,7 @@ object DarkColorTokens {
     val colorPressgram_blue600 = Color(0xff00359c)
     val colorPressgram_blue700 = Color(0xff0048b0)
     val colorPressgram_blue800 = Color(0xff0669d3)
-    val colorPressgram_blue900 = Color(0xff4488e4)
+    val colorPressgram_blue900 = Color(0xff2e5bff)
     val colorPurple100 = Color(0xff1a0055)
     val colorPurple1000 = Color(0xff9e87fc)
     val colorPurple1100 = Color(0xffad9cfe)

@@ -12,65 +12,58 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.LinearGradientShader
+import androidx.compose.ui.graphics.RadialGradientShader
 import androidx.compose.ui.graphics.ShaderBrush
-import androidx.compose.ui.unit.dp
 import io.element.android.compound.theme.ElementTheme
 import io.element.android.libraries.designsystem.preview.ElementPreview
 import io.element.android.libraries.designsystem.preview.PreviewsDayNight
-import io.element.android.libraries.designsystem.utils.drawWithLayer
 
 /**
  * Gradient background for FTUE (onboarding) screens.
+ *
+ * Two soft blue radial glows over a near-black canvas: an upper glow positioned
+ * right-of-center near the top, and a lower glow bleeding in from the left edge
+ * mid-screen — matches the Pressgram welcome screen design.
  */
 @Suppress("ModifierMissing")
 @Composable
 fun OnboardingBackground() {
+    // Figma reference uses Pressgram brand primary #2e5bff on near-black #010308.
+    val glowColor = Color(0xFF4071EC)
+    val upprerColor = Color(0xFF1C7FA6)
+    val canvasColor = if (ElementTheme.isLightTheme) ElementTheme.colors.bgCanvasDefault else Color(0xFF010308)
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(ElementTheme.colors.bgCanvasDefault)
+            .background(canvasColor)
     ) {
-        val isLightTheme = ElementTheme.isLightTheme
-        Canvas(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-                .align(Alignment.BottomCenter)
-        ) {
-            val gradientBrush = ShaderBrush(
-                LinearGradientShader(
-                    from = Offset(0f, size.height / 2f),
-                    to = Offset(size.width, size.height / 2f),
-                    colors = listOf(
-                        Color(0xFF0DBDA8),
-                        if (isLightTheme) Color(0xC90D5CBD) else Color(0xFF0D5CBD),
-                    )
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            // Figma layout is 390x844; positions are converted to fractions so the
+            // background scales to any screen size.
+            val upperCenter = Offset(x = size.width * 0.90f, y = size.height * 0.155f)
+            val lowerCenter = Offset(x = size.width * 0.20f, y = size.height * 0.42f)
+            val radius = size.width * 0.70f
+
+            val upperBrush = ShaderBrush(
+                RadialGradientShader(
+                    center = upperCenter,
+                    radius = radius,
+                    colors = listOf(upprerColor.copy(alpha = 0.55f), Color.Transparent),
                 )
             )
-            val eraseBrush = ShaderBrush(
-                LinearGradientShader(
-                    from = Offset(size.width / 2f, 0f),
-                    to = Offset(size.width / 2f, size.height * 2f),
-                    colors = listOf(
-                        Color(0xFF000000),
-                        Color(0x00000000),
-                    )
+            val lowerBrush = ShaderBrush(
+                RadialGradientShader(
+                    center = lowerCenter,
+                    radius = radius,
+                    colors = listOf(glowColor.copy(alpha = 0.45f), Color.Transparent),
                 )
             )
-            drawWithLayer {
-                drawRect(brush = gradientBrush, size = size)
-                drawRect(brush = gradientBrush, size = size, blendMode = BlendMode.Overlay)
-                drawRect(brush = eraseBrush, size = size, blendMode = BlendMode.DstOut)
-            }
+            drawRect(brush = upperBrush, size = size)
+            drawRect(brush = lowerBrush, size = size)
         }
     }
 }

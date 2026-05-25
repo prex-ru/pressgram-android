@@ -38,7 +38,7 @@ class ServerCatalogNode(
             state = state,
             modifier = modifier,
             onBackClick = ::navigateUp,
-            onServerClick = callback::onServerSelected,
+            onContinueClick = callback::onServerSelected,
         )
     }
 }

@@ -39,6 +39,11 @@
     <!-- Server catalog (Pressgram Community Registry, scenario B) -->
     <string name="screen_server_catalog_title">Choose a server</string>
     <string name="screen_server_catalog_error">Failed to load the server list.</string>
+    <string name="screen_server_catalog_search_placeholder">Search</string>
+    <string name="screen_server_catalog_search_empty">No servers match your search.</string>
+    <string name="screen_server_catalog_badge_open">Open registration</string>
+    <string name="screen_server_catalog_badge_token">By invitation</string>
+    <string name="screen_server_catalog_badge_closed">Invite only</string>
 
     <!-- Invite request screen (Pressgram Community Registry, screen 4) -->
     <string name="screen_invite_request_title">Invitation request</string>

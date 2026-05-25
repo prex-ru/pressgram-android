@@ -58,6 +58,7 @@ fun TextField(
     label: String? = null,
     supportingText: String? = null,
     placeholder: String? = null,
+    placeholderStyle: TextStyle? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     shape: Shape = RoundedCornerShape(4.dp),
@@ -100,6 +101,7 @@ fun TextField(
             shape = shape,
             leadingIcon = leadingIcon,
             placeholder = placeholder,
+            placeholderStyle = placeholderStyle,
             isTextEmpty = value.isEmpty(),
             innerTextField = innerTextField,
             trailingIcon = trailingIcon,
@@ -116,6 +118,7 @@ fun TextField(
     label: String? = null,
     supportingText: String? = null,
     placeholder: String? = null,
+    placeholderStyle: TextStyle? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     shape: Shape = RoundedCornerShape(4.dp),
@@ -158,6 +161,7 @@ fun TextField(
             shape = shape,
             leadingIcon = leadingIcon,
             placeholder = placeholder,
+            placeholderStyle = placeholderStyle,
             isTextEmpty = value.text.isEmpty(),
             innerTextField = innerTextField,
             trailingIcon = trailingIcon,
@@ -175,6 +179,7 @@ private fun DecorationBox(
     validity: TextFieldValidity?,
     shape: Shape,
     placeholder: String?,
+    placeholderStyle: TextStyle?,
     isTextEmpty: Boolean,
     supportingText: String?,
     leadingIcon: @Composable (() -> Unit)?,
@@ -209,7 +214,7 @@ private fun DecorationBox(
                         Text(
                             text = placeholder,
                             color = ElementTheme.colors.textSecondary,
-                            style = ElementTheme.typography.fontBodyLgRegular,
+                            style = placeholderStyle ?: ElementTheme.typography.fontBodyLgRegular,
                         )
                     }
                     innerTextField()

@@ -313,7 +313,7 @@ object LightColorTokens {
     val colorPressgram_blue600 = Color(0xffa2c6f6)
     val colorPressgram_blue700 = Color(0xff7faff1)
     val colorPressgram_blue800 = Color(0xff4389e7)
-    val colorPressgram_blue900 = Color(0xff0069d7)
+    val colorPressgram_blue900 = Color(0xff2e5bff)
     val colorPurple100 = Color(0xfffbfbff)
     val colorPurple1000 = Color(0xff6b37de)
     val colorPurple1100 = Color(0xff5d26cd)

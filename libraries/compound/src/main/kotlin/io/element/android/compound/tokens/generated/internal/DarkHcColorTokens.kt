@@ -313,7 +313,7 @@ object DarkHcColorTokens {
     val colorPressgram_blue600 = Color(0xff0048b0)
     val colorPressgram_blue700 = Color(0xff0063cd)
     val colorPressgram_blue800 = Color(0xff3680e2)
-    val colorPressgram_blue900 = Color(0xff8ab5f1)
+    val colorPressgram_blue900 = Color(0xff2e5bff)
     val colorPurple100 = Color(0xff1c005a)
     val colorPurple1000 = Color(0xffc0b5ff)
     val colorPurple1100 = Color(0xffcec7ff)

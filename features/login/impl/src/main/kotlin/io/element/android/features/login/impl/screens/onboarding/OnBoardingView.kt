@@ -34,15 +34,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import coil3.compose.AsyncImage
 import io.element.android.compound.theme.ElementTheme
+import io.element.android.compound.tokens.BrandFontFamily
 import io.element.android.compound.tokens.generated.CompoundIcons
 import io.element.android.features.login.impl.R
 import io.element.android.features.login.impl.login.LoginModeView
@@ -70,11 +74,6 @@ import io.element.android.libraries.testtags.testTag
 import io.element.android.libraries.ui.strings.CommonStrings
 import io.element.android.libraries.designsystem.R as DesignSystemR
 
-// Refs:
-// FTUE:
-// - https://www.figma.com/file/o9p34zmiuEpZRyvZXJZAYL/FTUE?type=design&node-id=133-5427&t=5SHVppfYzjvkEywR-0
-// ElementX:
-// - https://www.figma.com/file/0MMNu7cTOzLOlWb7ctTkv3/Element-X?type=design&node-id=1816-97419
 @Composable
 fun OnBoardingView(
     state: OnBoardingState,
@@ -193,7 +192,6 @@ private fun AddFirstAccountScaffold(
 ) {
     OnBoardingPage(
         modifier = modifier,
-        renderBackground = state.onBoardingLogoResId == null,
         content = {
             OnBoardingContent(
                 state = state,
@@ -235,16 +233,17 @@ private fun OnBoardingContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 40.dp),
+                .padding(bottom = 50.dp),
             horizontalAlignment = CenterHorizontally,
             verticalArrangement = Arrangement.Bottom
         ) {
             val pressgramLogo = painterResource(id = DesignSystemR.drawable.pressgram_logo)
-            // The top logo is always the Pressgram brand logo, never a community logo.
             Image(
                 painter = pressgramLogo,
                 contentDescription = null,
-                modifier = Modifier.size(96.dp).clip(RoundedCornerShape(22.dp)),
+                modifier = Modifier
+                    .size(96.dp)
+                    .clip(RoundedCornerShape(22.dp)),
             )
             Spacer(Modifier.height(24.dp))
             Column(
@@ -255,20 +254,24 @@ private fun OnBoardingContent(
                 Text(
                     text = state.selectedServerName
                         ?: stringResource(id = R.string.screen_server_detail_brand_name),
-                    style = ElementTheme.typography.fontHeadingLgBold,
+                    style = ElementTheme.typography.fontHeadingLgBold.copy(
+                        fontFamily = BrandFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 28.sp,
+                        letterSpacing = 0.04.em,
+                    ),
                     color = ElementTheme.colors.textPrimary,
                     textAlign = TextAlign.Center,
                 )
-                Spacer(Modifier.height(4.dp))
+                Spacer(Modifier.height(16.dp))
                 Text(
                     text = state.selectedServerDescription
                         ?: stringResource(id = R.string.screen_server_detail_pressgram_tagline),
-                    modifier = Modifier.padding(horizontal = 20.dp),
                     color = ElementTheme.colors.textSecondary,
-                    style = ElementTheme.typography.fontBodyMdRegular,
+                    style = ElementTheme.typography.fontBodyLgRegular,
                     textAlign = TextAlign.Center,
                 )
-                Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(37.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -280,12 +283,14 @@ private fun OnBoardingContent(
                     ) {
                         // The community logo comes from the registry API and is shown
                         // as a circle; the bundled Pressgram logo is the fallback.
+                        val pressgramLogo2 = painterResource(id = DesignSystemR.drawable.sample_avatar)
+
                         AsyncImage(
                             model = state.selectedServerLogoUrl,
                             contentDescription = null,
-                            placeholder = pressgramLogo,
-                            error = pressgramLogo,
-                            fallback = pressgramLogo,
+                            placeholder = pressgramLogo2,
+                            error = pressgramLogo2,
+                            fallback = pressgramLogo2,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .size(36.dp)
@@ -297,7 +302,7 @@ private fun OnBoardingContent(
                         ) {
                             Text(
                                 text = stringResource(id = R.string.screen_onboarding_pressgram_server_label),
-                                style = ElementTheme.typography.fontBodySmMedium,
+                                style = ElementTheme.typography.fontBodyMdMedium,
                                 color = ElementTheme.colors.textSecondary,
                             )
                             Text(
@@ -308,7 +313,7 @@ private fun OnBoardingContent(
                                 ),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                style = ElementTheme.typography.fontBodySmMedium,
+                                style = ElementTheme.typography.fontBodyMdMedium,
                                 color = ElementTheme.colors.textPrimary,
                             )
                         }
@@ -320,9 +325,10 @@ private fun OnBoardingContent(
                     ) {
                         Text(
                             text = stringResource(id = R.string.screen_onboarding_pressgram_change_server_inline),
-                            style = ElementTheme.typography.fontBodySmMedium,
-                            color = ElementTheme.colors.textPrimary,
-                            textDecoration = TextDecoration.Underline,
+                            style = ElementTheme.typography.fontBodyMdMedium.copy(
+                                fontWeight = FontWeight.SemiBold,
+                            ),
+                            color = ElementTheme.colors.textPrimary
                         )
                         Icon(
                             imageVector = CompoundIcons.ChevronRight(),
@@ -461,7 +467,9 @@ private fun PressgramOnboardingButtons(
         )
 
         Column(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             horizontalAlignment = CenterHorizontally,
         ) {
             val registerTextRes = if (state.requiresInviteCode) {
@@ -491,9 +499,11 @@ private fun PressgramTextLink(
     Text(
         modifier = Modifier
             .clickable(onClick = onClick)
-            .padding(vertical = 4.dp, horizontal = 16.dp),
+            .padding(top = 24.dp, start = 16.dp, end = 16.dp),
         text = text,
-        style = ElementTheme.typography.fontBodyMdMedium,
+        style = ElementTheme.typography.fontBodyLgMedium.copy(
+            fontWeight = FontWeight.SemiBold,
+        ),
         color = ElementTheme.colors.textPrimary,
         textDecoration = TextDecoration.Underline,
         textAlign = TextAlign.Center,

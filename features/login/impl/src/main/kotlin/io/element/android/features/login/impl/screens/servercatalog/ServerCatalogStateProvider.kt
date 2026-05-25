@@ -21,6 +21,10 @@ open class ServerCatalogStateProvider : PreviewParameterProvider<ServerCatalogSt
                 servers = AsyncData.Success(aCommunityServerList()),
                 selectedHomeserver = "https://pgram.im",
             ),
+            aServerCatalogState(
+                servers = AsyncData.Success(emptyList()),
+                searchQuery = "no match",
+            ),
         )
 }
 
@@ -50,10 +54,12 @@ internal fun aCommunityServerList() = listOf(
 
 internal fun aServerCatalogState(
     servers: AsyncData<List<CommunityServer>> = AsyncData.Success(aCommunityServerList()),
+    searchQuery: String = "",
     selectedHomeserver: String? = null,
     eventSink: (ServerCatalogEvents) -> Unit = {},
 ) = ServerCatalogState(
     servers = servers,
+    searchQuery = searchQuery,
     selectedHomeserver = selectedHomeserver,
     eventSink = eventSink,
 )

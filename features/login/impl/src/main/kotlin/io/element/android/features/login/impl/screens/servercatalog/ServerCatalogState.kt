@@ -12,8 +12,7 @@ import io.element.android.libraries.communityregistry.api.CommunityServer
 
 data class ServerCatalogState(
     val servers: AsyncData<List<CommunityServer>>,
-    // Homeserver URL (protocol form) currently selected on the welcome screen,
-    // used to mark the active entry in the list. Null until it is resolved.
+    val searchQuery: String,
     val selectedHomeserver: String?,
     val eventSink: (ServerCatalogEvents) -> Unit,
 )

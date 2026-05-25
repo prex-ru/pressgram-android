@@ -196,7 +196,7 @@ private fun ButtonInternal(
                     alpha = if (enabled) 1f else 0.5f
                 )
             } else {
-                ElementTheme.colors.borderInteractiveSecondary
+                ElementTheme.colors.bgAccentRest.copy(alpha = if (enabled) 1f else 0.5f)
             }
         )
         ButtonStyle.Text -> null
@@ -296,13 +296,13 @@ internal enum class ButtonStyle {
     fun getColors(destructive: Boolean): ButtonColors = when (this) {
         Filled -> ButtonDefaults.buttonColors(
             containerColor = getPrimaryColor(destructive),
-            contentColor = ElementTheme.materialColors.onPrimary,
+            contentColor = Color.White,
             disabledContainerColor = if (destructive) {
                 ElementTheme.colors.bgCriticalPrimary.copy(alpha = 0.5f)
             } else {
                 ElementTheme.colors.bgActionPrimaryDisabled
             },
-            disabledContentColor = ElementTheme.colors.textOnSolidPrimary
+            disabledContentColor = Color.White,
         )
         Outlined -> ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
