@@ -9,10 +9,15 @@
 package io.element.android.x
 
 import android.app.Application
+import android.content.Context
+import android.content.res.Configuration as ResConfiguration
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.material3.ComposeMaterial3Flags.isAnchoredDraggableComponentsStrictOffsetCheckEnabled
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.core.os.LocaleListCompat
 import androidx.startup.AppInitializer
 import androidx.work.Configuration
+import java.util.Locale
 import dev.zacsweers.metro.createGraphFactory
 import io.element.android.libraries.di.DependencyInjectionGraphOwner
 import io.element.android.libraries.workmanager.api.di.MetroWorkerFactory
@@ -29,9 +34,18 @@ class ElementXApplication : Application(), DependencyInjectionGraphOwner, Config
         .setWorkerFactory(MetroWorkerFactory(graph.workerProviders))
         .build()
 
+    override fun attachBaseContext(base: Context) {
+        val locale = Locale("ru")
+        Locale.setDefault(locale)
+        val config = ResConfiguration(base.resources.configuration)
+        config.setLocale(locale)
+        super.attachBaseContext(base.createConfigurationContext(config))
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate() {
         super.onCreate()
+        AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags("ru"))
         AppInitializer.getInstance(this).apply {
             initializeComponent(CrashInitializer::class.java)
             initializeComponent(PlatformInitializer::class.java)

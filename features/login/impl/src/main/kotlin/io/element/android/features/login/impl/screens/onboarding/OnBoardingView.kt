@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -284,7 +285,6 @@ private fun OnBoardingContent(
                         // The community logo comes from the registry API and is shown
                         // as a circle; the bundled Pressgram logo is the fallback.
                         val pressgramLogo2 = painterResource(id = DesignSystemR.drawable.sample_avatar)
-
                         AsyncImage(
                             model = state.selectedServerLogoUrl,
                             contentDescription = null,
@@ -504,7 +504,7 @@ private fun PressgramTextLink(
         style = ElementTheme.typography.fontBodyLgMedium.copy(
             fontWeight = FontWeight.SemiBold,
         ),
-        color = ElementTheme.colors.textPrimary,
+        color = Color.White.copy(alpha = 0.7f),
         textDecoration = TextDecoration.Underline,
         textAlign = TextAlign.Center,
     )

@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
@@ -212,6 +213,7 @@ private fun DecorationBox(
                 Box(modifier = Modifier.weight(1f)) {
                     if (placeholder != null && isTextEmpty) {
                         Text(
+                            modifier = Modifier.align(Alignment.CenterStart),
                             text = placeholder,
                             color = ElementTheme.colors.textSecondary,
                             style = placeholderStyle ?: ElementTheme.typography.fontBodyLgRegular,

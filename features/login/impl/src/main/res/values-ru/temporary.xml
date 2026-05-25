@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string name="screen_server_detail_loading_title">Загрузка сервера…</string>
+    <string name="screen_server_detail_load_error">Не удалось загрузить информацию о сервере.</string>
+    <string name="screen_server_detail_signin_button">Войти</string>
+    <string name="screen_server_detail_register_open_button">Создать аккаунт</string>
+    <string name="screen_server_detail_register_with_token_button">Регистрация (требуется код)</string>
+    <string name="screen_server_detail_request_button">Запросить приглашение</string>
+    <string name="screen_server_detail_token_contact_format">Контакт: %1$s</string>
+    <string name="screen_server_detail_coming_soon">Эта опция скоро появится.</string>
+    <string name="screen_server_detail_mode_open">Открытая регистрация</string>
+    <string name="screen_server_detail_mode_token">Требуется код приглашения</string>
+    <string name="screen_server_detail_mode_closed">Закрытое сообщество — только по приглашениям</string>
+    <string name="screen_server_detail_mode_unknown">Доступность регистрации неизвестна</string>
+
+    <!-- Pressgram brand block on the server-detail screen -->
+    <string name="screen_server_detail_brand_name">Pressgram</string>
+    <string name="screen_server_detail_pressgram_tagline">Децентрализованный мессенджер медиасообщества</string>
+    <string name="screen_server_detail_server_label_format">Сервер: %1$s</string>
+    <string name="screen_server_detail_change_server">Сменить сервер</string>
+
+    <!-- OnBoarding — Pressgram welcome with selected server -->
+    <string name="screen_onboarding_pressgram_server_label">Сервер:</string>
+    <string name="screen_onboarding_pressgram_server_value_format">%1$s (%2$s)</string>
+    <string name="screen_onboarding_pressgram_change_server_inline">Сменить</string>
+    <string name="screen_onboarding_pressgram_signin_password">Войти с паролем</string>
+    <string name="screen_onboarding_pressgram_signin_qr">Вход по QR-коду</string>
+    <string name="screen_onboarding_pressgram_register_open">Регистрация</string>
+    <string name="screen_onboarding_pressgram_register_with_token">Регистрация (требуется код)</string>
+    <string name="screen_onboarding_pressgram_request_invite">Запросить приглашение</string>
+
+    <!-- Server catalog (Pressgram Community Registry, scenario B) -->
+    <string name="screen_server_catalog_title">Выбор сервера</string>
+    <string name="screen_server_catalog_error">Не удалось загрузить список серверов.</string>
+    <string name="screen_server_catalog_search_placeholder">Поиск</string>
+    <string name="screen_server_catalog_search_empty">По вашему запросу ничего не найдено.</string>
+    <string name="screen_server_catalog_badge_open">Открытая регистрация</string>
+    <string name="screen_server_catalog_badge_token">По приглашениям</string>
+    <string name="screen_server_catalog_badge_closed">Только по приглашениям</string>
+
+    <!-- Invite request screen (Pressgram Community Registry, screen 4) -->
+    <string name="screen_invite_request_title">Запрос приглашения</string>
+    <string name="screen_invite_request_email_label">Контактный email</string>
+    <string name="screen_invite_request_message_label">Расскажите кратко о себе (от 20 до 1000 символов)</string>
+    <string name="screen_invite_request_submit">Отправить запрос</string>
+    <string name="screen_invite_request_success_title">Запрос отправлен</string>
+    <string name="screen_invite_request_success_message">Ваш запрос отправлен администраторам сервера. Ответ придёт на %1$s.</string>
+    <string name="screen_invite_request_success_hint">Когда получите код приглашения, вернитесь сюда и нажмите «Регистрация (требуется код)».</string>
+    <string name="screen_invite_request_success_action">Вернуться к началу</string>
+    <string name="screen_invite_request_error_invalid_email">Введите корректный email.</string>
+    <string name="screen_invite_request_error_invalid_message">Сообщение должно содержать от 20 до 1000 символов.</string>
+    <string name="screen_invite_request_error_not_accepting">Сервер сейчас не принимает запросы на приглашения.</string>
+    <string name="screen_invite_request_error_rate_limited">Слишком много запросов. Попробуйте позже.</string>
+    <string name="screen_invite_request_error_generic">Не удалось отправить запрос. Попробуйте ещё раз.</string>
+</resources>
