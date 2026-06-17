@@ -32,13 +32,30 @@ class MockCommunityRegistryService : CommunityRegistryService {
             logoUrl = "https://pgram.im/pressgram-logo-blue.png",
             type = "community",
             visibility = Visibility.Public,
-            // Local testing: pgram.im uses token registration so the invite-request
-            // flow is reachable straight from the default onboarding screen.
             registration = Registration.Token(
                 instructions = "Расскажите о себе и вашей работе в медиа — администратор рассмотрит заявку и пришлёт код приглашения.",
-                contact = "gulshan.rahimova.dev@gmail.com",
+                contact = "iwantto@pressgram.ru",
             ),
             owner = "PREX",
+            country = "RU",
+            language = "ru",
+            since = "2026-03-25",
+            tags = emptyList(),
+            active = true,
+            lastSeen = "2026-04-28T10:30:00Z",
+        ),
+        CommunityServer(
+            homeserver = "x.pgram.im",
+            name = "Pressgram X",
+            description = "Сервер от энтузиастов сообщества Pressgram",
+            logoUrl = "https://pgram.im/pressgram-logo-blue.png",
+            type = "community",
+            visibility = Visibility.Public,
+            registration = Registration.Token(
+                instructions = "Приглашения выдаются представителям медиасообщества. Расскажите о себе с указанием редакции в которой вы работаете для получения приглашения.",
+                contact = "v4ganovg@yandex.ru",
+            ),
+            owner = "",
             country = "RU",
             language = "ru",
             since = "2026-03-25",
